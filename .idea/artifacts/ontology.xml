@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ontology">
+    <output-path>$PROJECT_DIR$/out/artifacts/ontology</output-path>
+    <root id="archive" name="ontology.jar">
+      <element id="module-output" name="ontology" />
+    </root>
+  </artifact>
+</component>
