@@ -1,13 +1,10 @@
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 /**
@@ -30,11 +27,14 @@ public class PageDownloaderAgent extends Agent {
 
         @Override
         protected void processMessage(ACLMessage msg) {
+            System.out.println("Downloading url: "+ msg.getContent());
             try {
                 String pageContent = getHTML(msg.getContent());
                 System.out.println("Content html: " + pageContent);
                 //TODO pewnie będzie kilka crawlerów, to tu się będzie dodawać ich AID-y
-                send(AgentUtils.newMessage(pageContent, Constants.CRAWLER_AID));
+                ACLMessage msgForCrawler = AgentUtils.newMessage(pageContent, getAID(), Constants.HREF_CRAWLER_AID);
+                msgForCrawler.addUserDefinedParameter(Constants.URL, msg.getContent());
+                send(msgForCrawler);
             } catch (IOException e) {
                 System.out.println("error downloading "+msg.getContent());
                 e.printStackTrace();

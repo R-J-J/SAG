@@ -5,9 +5,14 @@ import jade.core.AID;
  */
 public interface Constants {
 
+    //identyfikatory agentów
     AID DOWNLOADER_AID = new AID("downloader", false);
-    AID CRAWLER_AID = new AID("crawler", false);
+    AID HREF_CRAWLER_AID = new AID("crawler", false);
+    AID GATEWAY_AID = new AID("gateway", false);
 
+    //parametry wiadomości
     String FROM_CRAWLER = "fromCrawler";
+    String URL = "url";
 
+    String URL_SEPARATOR = ";";
 }

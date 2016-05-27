@@ -12,8 +12,9 @@ public abstract class AgentUtils {
 
     }
 
-    public static ACLMessage newMessage(String content, AID... receivers) {
+    public static ACLMessage newMessage(String content, AID sender, AID... receivers) {
         ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+        message.setSender(sender);
         for(AID aid: receivers) {
             message.addReceiver(aid);
         }
@@ -22,4 +23,5 @@ public abstract class AgentUtils {
         message.setContent(content);
         return message;
     }
+
 }
