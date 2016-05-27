@@ -12,8 +12,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SimpleAgent extends Agent {
+
+    SimpleAgent() {
+        super();
+    }
+
     protected void setup() {
-        System.out.println("Cześć!");        // inicjalizacja agenta
+        System.out.println("Cześć, mam na imię "+getName()+", szukam koleżanek i kolegów");
         addBehaviour(new HttpGetBehaviour());
         addBehaviour(new ExampleBehaviour());
     }
@@ -37,7 +42,7 @@ class ExampleBehaviour extends Behaviour {
         }
     }
     public boolean done() {
-        if (receivedMessage) return true; else return false;
+        return receivedMessage;
     }
 }
 
