@@ -1,4 +1,3 @@
-import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 
 import java.io.BufferedReader;
@@ -10,24 +9,18 @@ import java.net.URL;
 /**
  * Created by Maciek on 27.05.2016.
  */
-public class PageDownloaderAgent extends Agent {
+public class PageDownloaderAgent extends AbstractAgent {
 
     @Override
-    protected void setup() {
-        System.out.println(getLocalName() + " gotowy do akcji! Mój AID to: "+getAID());
+    protected void addBehaviours() {
         addBehaviour(new HttpGetBehaviour());
-    }
-
-    @Override
-    protected void takeDown() {
-        System.out.println(getLocalName()+" kończy pracę");
     }
 
     private class HttpGetBehaviour extends AbstractMessageProcessingBehaviour {
 
         @Override
         protected void processMessage(ACLMessage msg) {
-            System.out.println("Downloading url: "+ msg.getContent());
+            System.out.println("Downloading url: " + msg.getContent());
             try {
                 String pageContent = getHTML(msg.getContent());
                 System.out.println("Content html: " + pageContent);
@@ -35,8 +28,9 @@ public class PageDownloaderAgent extends Agent {
                 ACLMessage msgForCrawler = AgentUtils.newMessage(pageContent, getAID(), Constants.HREF_CRAWLER_AID);
                 msgForCrawler.addUserDefinedParameter(Constants.URL, msg.getContent());
                 send(msgForCrawler);
+                Statistics.stat(Statistics.StatisticsEvent.DOWNLOADED);
             } catch (IOException e) {
-                System.out.println("error downloading "+msg.getContent());
+                System.out.println("error downloading " + msg.getContent());
                 e.printStackTrace();
             }
         }
