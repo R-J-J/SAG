@@ -18,10 +18,11 @@ public class SimpleAgent extends Agent {
     }
 
     protected void setup() {
-        System.out.println("Cześć, mam na imię "+getName()+", szukam koleżanek i kolegów");
+        System.out.println("Cześć, mam na imię " + getName() + ", szukam koleżanek i kolegów");
         addBehaviour(new HttpGetBehaviour());
         addBehaviour(new ExampleBehaviour());
     }
+
     protected void takeDown() { //opcjonalnie
         System.out.println("Nara!"); // operacje wykonywane bezpośrednio przed usunięciem agenta
     }
@@ -36,11 +37,11 @@ class ExampleBehaviour extends Behaviour {
         if (msg != null) {
             System.out.println("Otrzymałem wiadomość: " + msg.getContent());
             receivedMessage = true;
-        }
-        else {
+        } else {
             block();
         }
     }
+
     public boolean done() {
         return receivedMessage;
     }
@@ -59,13 +60,14 @@ class HttpGetBehaviour extends Behaviour {
                 e.printStackTrace();
             }
             receivedMessage = true;
-        }
-        else {
+        } else {
             block();
         }
     }
+
     public boolean done() {
-        if (receivedMessage) return true; else return false;
+        if (receivedMessage) return true;
+        else return false;
     }
 
     public static String getHTML(String urlToRead) throws Exception {
