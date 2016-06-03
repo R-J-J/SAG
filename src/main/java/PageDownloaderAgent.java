@@ -20,6 +20,14 @@ public class PageDownloaderAgent extends AbstractAgent {
 
         @Override
         protected void processMessage(ACLMessage msg) {
+            OntologyManager o = new OntologyManager();
+
+            try {
+                o.shouldLoad();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             System.out.println("Downloading url: " + msg.getContent());
             try {
                 String pageContent = getHTML(msg.getContent());
