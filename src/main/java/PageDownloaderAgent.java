@@ -1,3 +1,4 @@
+import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
 import java.io.BufferedReader;
@@ -5,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Maciek on 27.05.2016.
@@ -14,6 +18,12 @@ public class PageDownloaderAgent extends AbstractAgent {
     @Override
     protected void addBehaviours() {
         addBehaviour(new HttpGetBehaviour());
+    }
+
+    @Override
+    protected List<ServiceName> servicesToRegister()
+    {
+        return new ArrayList<>(Arrays.asList(Constants.DOWNLOADER_SERVICE));
     }
 
     private class HttpGetBehaviour extends AbstractMessageProcessingBehaviour {
@@ -32,8 +42,15 @@ public class PageDownloaderAgent extends AbstractAgent {
             try {
                 String pageContent = getHTML(msg.getContent());
                 System.out.println("Content html: " + pageContent);
-                //TODO pewnie będzie kilka crawlerów, to tu się będzie dodawać ich AID-y
-                ACLMessage msgForCrawler = AgentUtils.newMessage(pageContent, getAID(), Constants.HREF_CRAWLER_AID);
+
+                AID receiverAid;
+                try {
+                    receiverAid = getAgentForService(Constants.CRAWLER_SERVICE);
+                } catch (AgentNotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                ACLMessage msgForCrawler = AgentUtils.newMessage(pageContent, getAID(), receiverAid);
                 msgForCrawler.addUserDefinedParameter(Constants.URL, msg.getContent());
                 send(msgForCrawler);
                 Statistics.stat(Statistics.StatisticsEvent.DOWNLOADED);

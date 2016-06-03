@@ -5,10 +5,10 @@ import jade.core.AID;
  */
 public interface Constants {
 
-    //identyfikatory agentów
-    AID DOWNLOADER_AID = new AID("downloader", false);
-    AID HREF_CRAWLER_AID = new AID("crawler", false);
-    AID GATEWAY_AID = new AID("gateway", false);
+    //identyfikatory serwisów
+    AbstractAgent.ServiceName DOWNLOADER_SERVICE = new AbstractAgent.ServiceName("web", "download");
+    AbstractAgent.ServiceName CRAWLER_SERVICE = new AbstractAgent.ServiceName("web", "crawler");
+    AbstractAgent.ServiceName GATEWAY_SERVICE = new AbstractAgent.ServiceName("web", "gateway");
 
     //parametry wiadomości
     String FROM_CRAWLER = "fromCrawler";

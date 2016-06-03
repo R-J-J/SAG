@@ -1,9 +1,9 @@
+import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Maciek on 27.05.2016.
@@ -18,6 +18,12 @@ public class GatewayAgent extends AbstractAgent {
     @Override
     protected void addBehaviours() {
         addBehaviour(new UrlValidateBehaviour());
+    }
+
+    @Override
+    protected List<ServiceName> servicesToRegister()
+    {
+        return new ArrayList<>(Arrays.asList(Constants.GATEWAY_SERVICE));
     }
 
     private class UrlValidateBehaviour extends AbstractMessageProcessingBehaviour {
@@ -44,7 +50,14 @@ public class GatewayAgent extends AbstractAgent {
                     domain = url.getHost();
                 }
 
-                myAgent.send(AgentUtils.newMessage(url.toExternalForm(), getAID(), Constants.DOWNLOADER_AID));
+                AID receiverAid;
+                try {
+                    receiverAid = getAgentForService(Constants.DOWNLOADER_SERVICE);
+                } catch (AgentNotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                myAgent.send(AgentUtils.newMessage(url.toExternalForm(), getAID(), receiverAid));
             }
         }
 

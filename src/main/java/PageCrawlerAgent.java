@@ -1,12 +1,12 @@
 import com.sun.deploy.util.StringUtils;
+import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Maciek on 27.05.2016.
@@ -18,6 +18,12 @@ public class PageCrawlerAgent extends AbstractAgent {
     @Override
     protected void addBehaviours() {
         addBehaviour(new PageCrawlerBehaviour());
+    }
+
+    @Override
+    protected List<ServiceName> servicesToRegister()
+    {
+        return new ArrayList<>(Arrays.asList(Constants.CRAWLER_SERVICE));
     }
 
     private class PageCrawlerBehaviour extends AbstractMessageProcessingBehaviour {
@@ -40,7 +46,15 @@ public class PageCrawlerAgent extends AbstractAgent {
                 urls.add(nextUrlToProcess);
             }
             String jointUrls = StringUtils.join(urls, Constants.URL_SEPARATOR);
-            ACLMessage nextUrlToProcessMsg = AgentUtils.newMessage(jointUrls, getAID(), Constants.GATEWAY_AID);
+
+            AID receiverAid;
+            try {
+                receiverAid = getAgentForService(Constants.GATEWAY_SERVICE);
+            } catch (AgentNotFoundException e) {
+                e.printStackTrace();
+                return;
+            }
+            ACLMessage nextUrlToProcessMsg = AgentUtils.newMessage(jointUrls, getAID(), receiverAid);
             nextUrlToProcessMsg.addUserDefinedParameter(Constants.FROM_CRAWLER, "true");
             send(nextUrlToProcessMsg);
             Statistics.stat(Statistics.StatisticsEvent.CRAWLED);
