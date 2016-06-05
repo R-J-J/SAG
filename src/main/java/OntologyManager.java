@@ -261,6 +261,30 @@ public class OntologyManager {
         manager.addAxioms(ontology, propertyAxioms);
     }
 
+    // i.e. Bulbasaur, Charmander, Squirtle
+    void setDifferentIndividuals(String... individuals) {
+
+        Set<OWLIndividual> set = new HashSet<>();
+        for (String individual : individuals) {
+            set.add(factory.getOWLNamedIndividual(":" + individual, prefixManager));
+        }
+
+        OWLDifferentIndividualsAxiom differentIndividuals = factory.getOWLDifferentIndividualsAxiom(set);
+        manager.addAxiom(ontology, differentIndividuals);
+    }
+
+    // i.e. Man, Woman
+    void setDisjointClasses(String... classes) {
+
+        Set<OWLClass> set = new HashSet<>();
+        for (String c : classes) {
+            set.add(factory.getOWLClass(":" + c, prefixManager));
+        }
+
+        OWLDisjointClassesAxiom disjointClassesAxiom = factory.getOWLDisjointClassesAxiom(set);
+        manager.addAxiom(ontology, disjointClassesAxiom);
+    }
+
     void addEquivalentClasses(String object, OWLClassExpression expression) {
         OWLClass owlClass = factory.getOWLClass(":" + object, prefixManager);
 

@@ -102,7 +102,7 @@ public class OntologyAgent extends AbstractAgent {
         ontologyManager.addClass("Person");
         ontologyManager.addSubclass("Woman", "Person");
         ontologyManager.addSubclass("Man", "Person");
-        ontologyManager.addClassAssertion("Pawel", "Man");
+        ontologyManager.addClassAssertion("Pawel", "Person");
         ontologyManager.addClassAssertion("Kasia", "Woman");
         ontologyManager.addClassAssertion("Hubert", "Man");
         ontologyManager.addObjectPropertyAssertion("Pawel", "isFriendOf", "Kasia");
@@ -118,6 +118,8 @@ public class OntologyAgent extends AbstractAgent {
         ontologyManager.setPropertyType("isBrotherOf", Constants.ONT_TYPE_SYMMETRIC | Constants.ONT_TYPE_IRREFLEXIVE | Constants.ONT_TYPE_TRANSITIVE);
         OWLClassExpression expression = ontologyManager.createClassExpression("Person", "hasAge", 18, OWLFacet.MIN_INCLUSIVE);
         ontologyManager.addEquivalentClasses("Adult", expression);
+        ontologyManager.setDifferentIndividuals("Pawel", "Kasia", "Hubert");
+        ontologyManager.setDisjointClasses("Man", "Woman");
 
         ontologyManager.save();
     }
