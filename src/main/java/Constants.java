@@ -8,6 +8,7 @@ public interface Constants {
     AbstractAgent.ServiceName CRAWLER_SERVICE = new AbstractAgent.ServiceName("web", "crawler");
     AbstractAgent.ServiceName GATEWAY_SERVICE = new AbstractAgent.ServiceName("web", "gateway");
     AbstractAgent.ServiceName ONTOLOGY_SERVICE = new AbstractAgent.ServiceName("web", "ontology");
+    AbstractAgent.ServiceName STATISTICS_SERVICE = new AbstractAgent.ServiceName("general", "statistics");
 
     //parametry wiadomości
     String FROM_CRAWLER = "fromCrawler";

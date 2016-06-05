@@ -78,12 +78,12 @@ public class GatewayAgent extends AbstractAgent {
 
         private URL createAndValidateUrl(String urlString, boolean fromCrawler) {
             if (urlString == null) {
-                Statistics.stat(Statistics.StatisticsEvent.NULL);
+                statistics.stat(Statistics.StatisticsEvent.NULL);
                 return null;
             }
             if (alreadyProcessedUrls.size() >= LIMIT) {
                 System.out.println("Url rejected due to limit reached: " + urlString);
-                Statistics.stat(Statistics.StatisticsEvent.OVER_LIMIT);
+                statistics.stat(Statistics.StatisticsEvent.OVER_LIMIT);
                 return null;
             }
             if (urlString.endsWith("/")) {
@@ -101,22 +101,22 @@ public class GatewayAgent extends AbstractAgent {
                 url = new URL(urlString);
             } catch (MalformedURLException e) {
                 System.out.println("Invalid url: " + urlString);
-                Statistics.stat(Statistics.StatisticsEvent.BAD_URL);
+                statistics.stat(Statistics.StatisticsEvent.BAD_URL);
                 return null;
             }
             if (fromCrawler && !inDomain(url)) {
                 System.out.println("Url not in domain " + domain + ": " + urlString);
-                Statistics.stat(Statistics.StatisticsEvent.NOT_IN_DOMAIN);
+                statistics.stat(Statistics.StatisticsEvent.NOT_IN_DOMAIN);
                 return null;
             }
             if (alreadyProcessedUrls.contains(url)) {
                 System.out.println("Url already processed: " + url);
-                Statistics.stat(Statistics.StatisticsEvent.ALREADY_PROCESSED);
+                statistics.stat(Statistics.StatisticsEvent.ALREADY_PROCESSED);
                 return null;
             }
             System.out.println("Url valid: " + url);
             alreadyProcessedUrls.add(url);
-            Statistics.stat(Statistics.StatisticsEvent.VALIDATED);
+            statistics.stat(Statistics.StatisticsEvent.VALIDATED);
             return url;
         }
 

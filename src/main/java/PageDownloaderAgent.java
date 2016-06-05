@@ -54,7 +54,7 @@ public class PageDownloaderAgent extends AbstractAgent {
                     msgForCrawler.addUserDefinedParameter(Constants.PHRASES, phrases);
                 }
                 send(msgForCrawler);
-                Statistics.stat(Statistics.StatisticsEvent.DOWNLOADED);
+                statistics.stat(Statistics.StatisticsEvent.DOWNLOADED);
             } catch (IOException e) {
                 System.out.println("error downloading " + msg.getContent());
                 e.printStackTrace();

@@ -30,9 +30,13 @@ public abstract class AbstractAgent extends Agent {
 
     private Random randomGenerator = new Random();
 
+    protected StatisticsClientBehaviour statistics;
+//    protected Statistics statistics = new Statistics();
+
     @Override
     protected void setup() {
-        Statistics.register(this);
+        statistics = new StatisticsClientBehaviour(this);
+        addBehaviour(statistics);
         addBehaviours();
         registerServices();
 
@@ -43,17 +47,26 @@ public abstract class AbstractAgent extends Agent {
     protected void takeDown()
     {
         deregisterServices();
+        statistics.deregister();
         System.out.println(getLocalName() + " kończy pracę");
     }
 
-    //TODO probably methods beforeMove() and afterMove() also should be overridden and deregister and register services again
+    @Override
+    protected void beforeMove() {
+        super.beforeMove();
+        takeDown();
+    }
+
+    @Override
+    protected void afterMove() {
+        super.afterMove();
+        setup();
+    }
 
     @Override
     protected void afterClone() {
         super.afterClone();
-        Statistics.register(this);
-        registerServices();
-        System.out.println(getLocalName() + " sklonowany i gotowy do akcji! Mój AID to: " + getAID());
+        setup();
     }
 
     protected abstract void addBehaviours();
@@ -63,7 +76,7 @@ public abstract class AbstractAgent extends Agent {
         return new ArrayList<>();
     }
 
-    protected AID getAgentForService(ServiceName serviceName) throws AgentNotFoundException
+    protected AID[] getAgentListForService(ServiceName serviceName)
     {
         DFAgentDescription dfad = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
@@ -76,17 +89,25 @@ public abstract class AbstractAgent extends Agent {
         try
         {
             DFAgentDescription[] result = DFService.search(this, dfad);
-            if (result.length == 0)
-                throw new AgentNotFoundException();
-
-            int index = randomGenerator.nextInt(result.length);
-            return result[index].getName();
+            AID[] aids = new AID[result.length];
+            for (int i = 0; i < result.length; i++) {
+                aids[i] = result[i].getName();
+            }
+            return aids;
         }
         catch (FIPAException ex)
         {
             ex.printStackTrace();
-            throw new AgentNotFoundException();
         }
+        return new AID[0];
+    }
+
+    protected AID getAgentForService(ServiceName serviceName) throws AgentNotFoundException {
+        AID[] result = getAgentListForService(serviceName);
+        if (result.length == 0)
+            throw new AgentNotFoundException();
+        int index = randomGenerator.nextInt(result.length);
+        return result[index];
     }
 
     private void registerServices()

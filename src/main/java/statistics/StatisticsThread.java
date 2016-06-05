@@ -1,5 +1,6 @@
 package statistics;
 
+import jade.core.AID;
 import jade.core.Agent;
 
 import java.util.List;
@@ -14,36 +15,32 @@ public class StatisticsThread extends Thread {
     private static final int LEGEND_INTERVAL = 15;
 
     private final Map<Statistics.StatisticsEvent, Integer> statistics;
-    private final List<Agent> agents;
+    private final Map<AID, Integer> agents;
 
     private boolean running = true;
 
-    StatisticsThread(Map<Statistics.StatisticsEvent, Integer> statistics, List<Agent> agents) {
+    public StatisticsThread(Map<Statistics.StatisticsEvent, Integer> statistics, Map<AID, Integer> agents) {
         this.statistics = statistics;
         this.agents = agents;
     }
 
     @Override
     public void run() {
-        int i = 0;
         while (running) {
-            //if(i % LEGEND_INTERVAL == 0) {
+            System.out.println("--------------------------");
+
             for (Statistics.StatisticsEvent event : statistics.keySet()) {
-                System.out.print(event.name() + "\t");
+                System.out.println("| " + event.name() + ": " + statistics.get(event));
             }
-            for (Agent agent : agents) {
-                System.out.print(agent.getLocalName() + "'S QUEUE\t");
+
+            System.out.println("| ");
+
+            for (AID agent : agents.keySet()) {
+                System.out.println("| " + agent.getLocalName() + "'S QUEUE: \t" + agents.get(agent));
             }
-            System.out.println();
-            // }
-            for (Statistics.StatisticsEvent event : statistics.keySet()) {
-                System.out.print(statistics.get(event) + "\t\t");
-            }
-            for (Agent agent : agents) {
-                System.out.print(agent.getCurQueueSize() + "\t\t\t");
-            }
-            System.out.println();
-            ++i;
+
+            System.out.println("--------------------------");
+
             try {
                 sleep(STATS_INTERVAL);
             } catch (InterruptedException e) {

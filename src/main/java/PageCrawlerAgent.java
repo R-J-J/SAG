@@ -109,8 +109,7 @@ public class PageCrawlerAgent extends AbstractAgent {
             nextUrlToProcessMsg.addUserDefinedParameter(Constants.PHRASES, phrases);
             send(nextUrlToProcessMsg);
 
-            Statistics.stat(Statistics.StatisticsEvent.CRAWLED);
-
+            statistics.stat(Statistics.StatisticsEvent.CRAWLED);
         }
     }
 }
