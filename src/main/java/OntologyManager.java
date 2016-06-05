@@ -3,7 +3,6 @@ import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
 import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 import java.io.File;
 
@@ -30,10 +29,18 @@ public class OntologyManager {
             factory = manager.getOWLDataFactory();
 
             // Create the document IRI for our ontology
-            documentIRI = IRI.create("file:/" + new File(fileName).getCanonicalPath().replaceAll("\\\\", "/"));
+            fileName = new File(fileName).getCanonicalPath().replaceAll("\\\\", "/");
+            String prefix = "file:";
+
+            // Windows path fixing
+            if (!fileName.startsWith("/"))
+                prefix += "/";
+
+            documentIRI = IRI.create(prefix + fileName);
+
             // Set up a mapping, which maps the ontology to the document IRI
-            SimpleIRIMapper mapper = new SimpleIRIMapper(ontologyIRI, documentIRI);
-            manager.getIRIMappers().add(mapper);
+//            SimpleIRIMapper mapper = new SimpleIRIMapper(ontologyIRI, documentIRI);
+//            manager.getIRIMappers().add(mapper);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,7 +63,7 @@ public class OntologyManager {
     public void addSubclass(String derived, String parent) {
         derived = processName(derived);
         parent = processName(parent);
-        
+
         // Get hold of references to derived and parent classes. Note that the ontology
         // does not contain them, we simply get references to
         // objects from a data factory that REPRESENT both classes.
