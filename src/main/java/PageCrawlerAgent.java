@@ -57,7 +57,7 @@ public class PageCrawlerAgent extends AbstractAgent {
             ACLMessage nextUrlToProcessMsg = AgentUtils.newMessage(jointUrls, getAID(), receiverAid);
             nextUrlToProcessMsg.addUserDefinedParameter(Constants.FROM_CRAWLER, "true");
             send(nextUrlToProcessMsg);
-            Statistics.stat(Statistics.StatisticsEvent.CRAWLED);
+            statistics.stat(Statistics.StatisticsEvent.CRAWLED);
         }
     }
 }

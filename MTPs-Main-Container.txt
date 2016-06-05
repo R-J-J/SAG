@@ -1,1 +1,1 @@
-http://192.168.0.10:7778/acc
+http://rafal-ThinkPad-T420s:7778/acc

@@ -49,7 +49,7 @@ public class PageDownloaderAgent extends AbstractAgent {
                 ACLMessage msgForCrawler = AgentUtils.newMessage(pageContent, getAID(), receiverAid);
                 msgForCrawler.addUserDefinedParameter(Constants.URL, msg.getContent());
                 send(msgForCrawler);
-                Statistics.stat(Statistics.StatisticsEvent.DOWNLOADED);
+                statistics.stat(Statistics.StatisticsEvent.DOWNLOADED);
             } catch (IOException e) {
                 System.out.println("error downloading " + msg.getContent());
                 e.printStackTrace();
