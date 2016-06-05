@@ -22,14 +22,22 @@ public class SubclassRule extends Rule {
         if(results.size() < position+2) {
             return;
         }
-        MorphInterpretation object = results.get(position);
-        MorphInterpretation verb = results.get(position+1);
-        MorphInterpretation subclass = results.get(position+2);
 
+
+        MorphInterpretation object = results.get(position);
+        int verbIndex = LanguageUtils.findNextWord(results, position);
+        if(verbIndex == -1) {
+            return;
+        }
+        MorphInterpretation verb = results.get(verbIndex);
         if(!subClassPhrases.contains(verb.getLemma())) {
             return;
         }
-
+        int subclassIndex = LanguageUtils.findNextWord(results, verbIndex);
+        if(subclassIndex == -1) {
+            return;
+        }
+        MorphInterpretation subclass = results.get(subclassIndex);
         analysisBuilder.addObjectSubclass(new ObjectSubclass(object.getLemma(), subclass.getLemma()));
     }
 

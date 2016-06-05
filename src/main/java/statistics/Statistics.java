@@ -20,7 +20,7 @@ public class Statistics {
         DOWNLOAD_FAILED,
         DOWNLOADED,
         CRAWLED,
-        IS_STATEMENTS_FOUND
+        ADDED_TO_ONTOLOGY
     }
 
     private static final Map<StatisticsEvent, Integer> statistics = new ConcurrentHashMap<>();

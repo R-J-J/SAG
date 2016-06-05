@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class GatewayAgent extends AbstractAgent {
 
-    private static final int LIMIT = 1000;
+    private static final int LIMIT = 10;
 
     private Set<URL> alreadyProcessedUrls = new HashSet<>();
     private String domain;

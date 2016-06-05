@@ -1,6 +1,7 @@
 import jade.lang.acl.ACLMessage;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.vocab.OWLFacet;
+import statistics.Statistics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +95,7 @@ public class OntologyAgent extends AbstractAgent {
                     }
                 }
             }
+            statistics.stat(Statistics.StatisticsEvent.ADDED_TO_ONTOLOGY);
         }
     }
 
