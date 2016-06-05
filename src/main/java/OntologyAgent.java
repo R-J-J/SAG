@@ -1,4 +1,5 @@
 import jade.lang.acl.ACLMessage;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class OntologyAgent extends AbstractAgent {
                 }
                 else if (type.equals(Constants.ONT_TYPE_DATA_ASSERTION)) {
                     String property = msg.getUserDefinedParameter(Constants.ONT_PROPERTY);
-                    String value = msg.getUserDefinedParameter(Constants.ONT_PROPERTY);
+                    String value = msg.getUserDefinedParameter(Constants.ONT_VALUE);
                     String valueType = msg.getUserDefinedParameter(Constants.ONT_VALUE_TYPE);
 
                     if (valueType.equals(Constants.ONT_TYPE_STRING)) {
@@ -98,16 +99,26 @@ public class OntologyAgent extends AbstractAgent {
 
     private void test() {
         ontologyManager.createNewOntology("http://www.panda.pl", "ontologies/panda_1.xml");
-        ontologyManager.addClass("Panda");
-        ontologyManager.addClass("Koala");
-        ontologyManager.addClass("Panda Wielka");
-        ontologyManager.addSubclass("Panda Wielka", "Panda");
-        ontologyManager.addClassAssertion("Pawel", "Panda");
-        ontologyManager.addClassAssertion("Hubert", "Panda Wielka");
-        ontologyManager.addObjectPropertyAssertion("Pawel", "isBrotherOf", "Hubert");
-        ontologyManager.addDataPropertyAssertion("Pawel", "hasAge", 29);
+        ontologyManager.addClass("Person");
+        ontologyManager.addSubclass("Woman", "Person");
+        ontologyManager.addSubclass("Man", "Person");
+        ontologyManager.addClassAssertion("Pawel", "Man");
+        ontologyManager.addClassAssertion("Kasia", "Woman");
+        ontologyManager.addClassAssertion("Hubert", "Man");
+        ontologyManager.addObjectPropertyAssertion("Pawel", "isFriendOf", "Kasia");
+        ontologyManager.addObjectPropertyAssertion("Hubert", "isBrotherOf", "Hubert");
+        ontologyManager.addDataPropertyAssertion("Pawel", "hasAge", 23);
         ontologyManager.addDataPropertyAssertion("Pawel", "hasNickname", "Pandeiros");
-        ontologyManager.addPropertyDataRange("hasAge", 20, OWLFacet.MAX_INCLUSIVE);
+        ontologyManager.addPropertyDataRange("hasAge", 0, OWLFacet.MIN_INCLUSIVE);
+        ontologyManager.addPropertyDataRange("hasAge", Constants.ONT_TYPE_INTEGER);
+        ontologyManager.addPropertyDomain("isFriendOf", "Person");
+        ontologyManager.addPropertyDomain("isBrotherOf", "Man");
+        ontologyManager.addSubObjectProperty("isMaleSiblingOf", "isBrotherOf");
+        ontologyManager.setPropertyType("isFriendOf", Constants.ONT_TYPE_SYMMETRIC | Constants.ONT_TYPE_IRREFLEXIVE);
+        ontologyManager.setPropertyType("isBrotherOf", Constants.ONT_TYPE_SYMMETRIC | Constants.ONT_TYPE_IRREFLEXIVE | Constants.ONT_TYPE_TRANSITIVE);
+        OWLClassExpression expression = ontologyManager.createClassExpression("Person", "hasAge", 18, OWLFacet.MIN_INCLUSIVE);
+        ontologyManager.addEquivalentClasses("Adult", expression);
+
         ontologyManager.save();
     }
 }
