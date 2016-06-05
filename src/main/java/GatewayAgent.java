@@ -48,7 +48,7 @@ public class GatewayAgent extends AbstractAgent {
                 if (!fromCrawler) {
                     //nowy request
                     alreadyProcessedUrls.clear();
-                    Statistics.reset();
+                    statistics.reset();
                 }
                 URL url = createAndValidateUrl(urlString, fromCrawler);
 

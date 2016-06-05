@@ -1,6 +1,7 @@
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import statistics.Statistics;
 
 import java.util.ArrayList;
 import java.util.Arrays;

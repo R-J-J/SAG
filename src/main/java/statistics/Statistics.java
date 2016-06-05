@@ -28,7 +28,7 @@ public class Statistics {
 
     private static final StatisticsThread thread = new StatisticsThread(statistics, agents);
 
-    static void stat(StatisticsEvent event) {
+    public static void stat(StatisticsEvent event) {
         Integer value = statistics.get(event);
         statistics.put(event, value == null ? 1 : value + 1);
         if (!thread.isAlive()) {
@@ -36,18 +36,18 @@ public class Statistics {
         }
     }
 
-    static synchronized void register(AID agent) {
+    public static synchronized void register(AID agent) {
         agents.put(agent, 0);
         if (!thread.isAlive()) {
             thread.start();
         }
     }
 
-    static synchronized void updateQueue(AID agent, int queueSize) {
+    public static synchronized void updateQueue(AID agent, int queueSize) {
         agents.replace(agent, queueSize);
     }
 
-    static synchronized void deregister(AID agent) {
+    public static synchronized void deregister(AID agent) {
         agents.remove(agent);
     }
 

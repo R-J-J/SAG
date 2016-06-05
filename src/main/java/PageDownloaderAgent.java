@@ -58,7 +58,7 @@ public class PageDownloaderAgent extends AbstractAgent {
             } catch (IOException e) {
                 System.out.println("error downloading " + msg.getContent());
                 e.printStackTrace();
-                Statistics.stat(Statistics.StatisticsEvent.DOWNLOAD_FAILED);
+                statistics.stat(Statistics.StatisticsEvent.DOWNLOAD_FAILED);
             }
         }
 
