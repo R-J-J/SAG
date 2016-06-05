@@ -22,12 +22,30 @@ public interface Constants {
     String ONT_OBJECT = "oObject";
     String ONT_RELATED_OBJECT = "oRelatedObject";
     String ONT_PROPERTY = "oProperty";
+    String ONT_TYPE = "oType";
+    String ONT_VALUE = "oValue";
+    String ONT_VALUE_TYPE = "oValueType";
 
     // OntologyAgent message values;
     String ONT_NEW = "oNewOntology";
     String ONT_ADD_CLASS = "oAddClass";
     String ONT_ADD_SUBCLASS = "oAddSubclass";
-    String ONT_ADD_PROPERTY = "oAddProperty";
+    String ONT_ADD_ASSERTION = "oAddAssertion";
+    String ONT_TYPE_OBJECT_ASSERTION = "oObjectProperty";
+    String ONT_TYPE_DATA_ASSERTION = "oDataProperty";
+    String ONT_TYPE_CLASS_ASSERTION = "oClassAssertion";
+    String ONT_TYPE_INTEGER = "oTypeInteger";
+    String ONT_TYPE_STRING = "oTypeString";
+
+    // OntologyManager properties types.
+    int ONT_TYPE_FUNCTIONAL = 1;
+    int ONT_TYPE_INVERSE_FUNCTIONAL = 1 << 1;
+    int ONT_TYPE_REFLEXIVE = 1 << 2;
+    int ONT_TYPE_IRREFLEXIVE = 1 << 4;
+    int ONT_TYPE_SYMMETRIC = 1 << 4;
+    int ONT_TYPE_ASYMMETRIC = 1 << 5;
+    int ONT_TYPE_TRANSITIVE = 1 << 6;
+
 
     String TEST_ONTOLOGY = "<?xml version=\"1.0\"?>\n"
             + "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns=\"http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#\" xml:base=\"http://protege.stanford.edu/plugins/owl/owl-library/koala.owl\">\n"
