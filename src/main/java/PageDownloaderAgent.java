@@ -1,5 +1,6 @@
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import statistics.Statistics;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class PageDownloaderAgent extends AbstractAgent {
 
     @Override
     protected void addBehaviours() {
+        System.setProperty("jsse.enableSNIExtension", "false");
         addBehaviour(new HttpGetBehaviour());
     }
 
@@ -38,6 +40,8 @@ public class PageDownloaderAgent extends AbstractAgent {
                 e.printStackTrace();
             }
 
+            String phrases = msg.getUserDefinedParameter(Constants.PHRASES);
+
             System.out.println("Downloading url: " + msg.getContent());
             try {
                 String pageContent = getHTML(msg.getContent());
@@ -52,11 +56,15 @@ public class PageDownloaderAgent extends AbstractAgent {
                 }
                 ACLMessage msgForCrawler = AgentUtils.newMessage(pageContent, getAID(), receiverAid);
                 msgForCrawler.addUserDefinedParameter(Constants.URL, msg.getContent());
+                if(phrases != null) {
+                    msgForCrawler.addUserDefinedParameter(Constants.PHRASES, phrases);
+                }
                 send(msgForCrawler);
                 Statistics.stat(Statistics.StatisticsEvent.DOWNLOADED);
             } catch (IOException e) {
                 System.out.println("error downloading " + msg.getContent());
                 e.printStackTrace();
+                Statistics.stat(Statistics.StatisticsEvent.DOWNLOAD_FAILED);
             }
         }
 

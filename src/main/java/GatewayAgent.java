@@ -1,5 +1,7 @@
+import com.google.common.base.Strings;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import statistics.Statistics;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,7 +34,15 @@ public class GatewayAgent extends AbstractAgent {
         protected void processMessage(ACLMessage msg) {
             System.out.println("New url on input: " + msg.getContent());
             String[] urls = msg.getContent().split(Constants.URL_SEPARATOR);
+
             boolean fromCrawler = Boolean.valueOf(msg.getUserDefinedParameter(Constants.FROM_CRAWLER));
+
+            String phrases = msg.getUserDefinedParameter(Constants.PHRASES);
+            if(Strings.isNullOrEmpty(phrases)) {
+                System.out.println("No phrases defined. Crawler can build no ontology. Aborting");
+                //TODO przywrocic
+                // return;
+            }
 
             for (String urlString : urls) {
                 if (!fromCrawler) {
@@ -57,7 +67,12 @@ public class GatewayAgent extends AbstractAgent {
                     e.printStackTrace();
                     return;
                 }
-                myAgent.send(AgentUtils.newMessage(url.toExternalForm(), getAID(), receiverAid));
+
+                ACLMessage message = AgentUtils.newMessage(url.toExternalForm(), getAID(), receiverAid);
+                if(phrases != null) {
+                    message.addUserDefinedParameter(Constants.PHRASES, phrases);
+                }
+                myAgent.send(message);
             }
         }
 

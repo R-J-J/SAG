@@ -1,3 +1,5 @@
+package statistics;
+
 import jade.core.Agent;
 
 import java.util.List;

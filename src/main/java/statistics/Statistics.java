@@ -1,3 +1,5 @@
+package statistics;
+
 import jade.core.Agent;
 
 import java.util.ArrayList;
@@ -10,15 +12,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Statistics {
 
-    enum StatisticsEvent {
+    public enum StatisticsEvent {
         NULL,
         OVER_LIMIT,
         BAD_URL,
         NOT_IN_DOMAIN,
         ALREADY_PROCESSED,
         VALIDATED,
+        DOWNLOAD_FAILED,
         DOWNLOADED,
-        CRAWLED
+        CRAWLED,
+        IS_STATEMENTS_FOUND
     }
 
     private static final Map<StatisticsEvent, Integer> statistics = new ConcurrentHashMap<>();
@@ -26,7 +30,7 @@ public class Statistics {
 
     private static final StatisticsThread thread = new StatisticsThread(statistics, agents);
 
-    static void stat(StatisticsEvent event) {
+    public static void stat(StatisticsEvent event) {
         Integer value = statistics.get(event);
         statistics.put(event, value == null ? 1 : value + 1);
         if (!thread.isAlive()) {
@@ -34,14 +38,14 @@ public class Statistics {
         }
     }
 
-    static synchronized void register(Agent agent) {
+    public static synchronized void register(Agent agent) {
         agents.add(agent);
         if (!thread.isAlive()) {
             thread.start();
         }
     }
 
-    static void reset() {
+    public static void reset() {
         statistics.clear();
     }
 }

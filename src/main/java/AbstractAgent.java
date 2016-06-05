@@ -4,6 +4,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import statistics.Statistics;
 
 import java.util.ArrayList;
 import java.util.List;
