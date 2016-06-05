@@ -7,8 +7,14 @@ import java.util.List;
 /**
  * Created by Arjan on 05.06.2016.
  */
-public interface Rule {
+public abstract class Rule {
 
-    List<ObjectProperty> checkRule(List<MorphInterpretation> results, int position);
+    protected final AnalysisBuilder analysisBuilder;
+
+    public Rule(AnalysisBuilder analysisBuilder) {
+        this.analysisBuilder = analysisBuilder;
+    }
+
+    public abstract void checkRule(List<MorphInterpretation> results, int position);
 
 }

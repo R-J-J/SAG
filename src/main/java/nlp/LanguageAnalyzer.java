@@ -2,23 +2,19 @@ package nlp;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import javafx.util.Pair;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.getopt.stempel.Stemmer;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import pl.sgjp.morfeusz.Morfeusz;
 import pl.sgjp.morfeusz.MorphInterpretation;
-import pl.sgjp.morfeusz.ResultsIterator;
 import pl.sgjp.morfeusz.app.MorfeuszUtils;
-import statistics.Statistics;
 
 import java.util.*;
 
 /**
  * Created by Arjan on 05.06.2016.
  */
-public class LanguageAnalyzer {
+public class LanguageAnalyzer implements AnalysisBuilder {
 
     private static final Set<String> stopWords = Sets.newHashSet();
 
@@ -27,6 +23,7 @@ public class LanguageAnalyzer {
     private final Morfeusz morfeusz = Morfeusz.createInstance();
 
     private final Set<ObjectProperty> objectProperties = new HashSet<>();
+    private final Set<ObjectSubclass> objectSubclasses = new HashSet<>();
 
     private final List<Rule> rules = new ArrayList<>();
 
@@ -38,6 +35,25 @@ public class LanguageAnalyzer {
                 phraseInterpretations.put(noun.getLemma(), noun);
             }
         }
+        rules.add(new SubclassRule(this));
+    }
+
+    @Override
+    public void addObjectProperty(ObjectProperty objectProperty) {
+        objectProperties.add(objectProperty);
+    }
+
+    @Override
+    public void addObjectSubclass(ObjectSubclass objectSubclass) {
+        objectSubclasses.add(objectSubclass);
+    }
+
+    public Set<ObjectProperty> getObjectProperties() {
+        return objectProperties;
+    }
+
+    public Set<ObjectSubclass> getObjectSubclasses() {
+        return objectSubclasses;
     }
 
     public void analyzeTable(Element table, String object) {
@@ -75,16 +91,16 @@ public class LanguageAnalyzer {
         }
 
         List<MorphInterpretation> results = morfeusz.analyseAsList(text);
-        List<ObjectProperty> properties = new ArrayList<>();
 
         for(int i=0; i<results.size(); ++i) {
             System.out.println(MorfeuszUtils.getInterpretationString(results.get(i), morfeusz));
             if(phraseInterpretations.containsKey(results.get(i).getLemma())) {
                 for(Rule rule: rules) {
-                    properties.addAll(rule.checkRule(results, i));
+                    rule.checkRule(results, i);
                 }
             }
         }
+
 /*
         String[] words = text.toLowerCase().replaceAll("\\.\\?,!", "").split(" ");
         for(int i=0; i<words.length; ++i) {
@@ -100,9 +116,6 @@ public class LanguageAnalyzer {
         }*/
     }
 
-    public LanguageAnalysis getResult() {
-        return new LanguageAnalysis(objectProperties);
-    }
 /*
     private void findIsStatement(String[] words, int position) {
         if(position+2 < words.length && isPhrases.contains(words[position+1]) && !stopWords.contains(words[position+2])) {
