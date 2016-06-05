@@ -1,5 +1,3 @@
-import jade.core.AID;
-
 /**
  * Created by Maciek on 27.05.2016.
  */
@@ -9,12 +7,26 @@ public interface Constants {
     AbstractAgent.ServiceName DOWNLOADER_SERVICE = new AbstractAgent.ServiceName("web", "download");
     AbstractAgent.ServiceName CRAWLER_SERVICE = new AbstractAgent.ServiceName("web", "crawler");
     AbstractAgent.ServiceName GATEWAY_SERVICE = new AbstractAgent.ServiceName("web", "gateway");
+    AbstractAgent.ServiceName ONTOLOGY_SERVICE = new AbstractAgent.ServiceName("web", "ontology");
 
     //parametry wiadomości
     String FROM_CRAWLER = "fromCrawler";
     String URL = "url";
 
     String URL_SEPARATOR = ";";
+
+    // OntologyAgent message keys.
+    String ONT_OPERATION = "oOperation";
+    String ONT_BASE = "oBase";                  // i.e. http://www.wp.pl
+    String ONT_OBJECT = "oObject";
+    String ONT_RELATED_OBJECT = "oRelatedObject";
+    String ONT_PROPERTY = "oProperty";
+
+    // OntologyAgent message values;
+    String ONT_NEW = "oNewOntology";
+    String ONT_ADD_CLASS = "oAddClass";
+    String ONT_ADD_SUBCLASS = "oAddSubclass";
+    String ONT_ADD_PROPERTY = "oAddProperty";
 
     String TEST_ONTOLOGY = "<?xml version=\"1.0\"?>\n"
             + "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns=\"http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#\" xml:base=\"http://protege.stanford.edu/plugins/owl/owl-library/koala.owl\">\n"

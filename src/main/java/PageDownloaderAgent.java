@@ -1,5 +1,8 @@
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,13 +33,6 @@ public class PageDownloaderAgent extends AbstractAgent {
 
         @Override
         protected void processMessage(ACLMessage msg) {
-            OntologyManager o = new OntologyManager();
-
-            try {
-                o.shouldLoad();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
             System.out.println("Downloading url: " + msg.getContent());
             try {
