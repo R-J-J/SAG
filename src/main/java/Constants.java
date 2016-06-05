@@ -1,5 +1,3 @@
-import jade.core.AID;
-
 /**
  * Created by Maciek on 27.05.2016.
  */
@@ -9,6 +7,7 @@ public interface Constants {
     AbstractAgent.ServiceName DOWNLOADER_SERVICE = new AbstractAgent.ServiceName("web", "download");
     AbstractAgent.ServiceName CRAWLER_SERVICE = new AbstractAgent.ServiceName("web", "crawler");
     AbstractAgent.ServiceName GATEWAY_SERVICE = new AbstractAgent.ServiceName("web", "gateway");
+    AbstractAgent.ServiceName ONTOLOGY_SERVICE = new AbstractAgent.ServiceName("web", "ontology");
 
     //parametry wiadomości
     String FROM_CRAWLER = "fromCrawler";
@@ -17,6 +16,28 @@ public interface Constants {
 
     String URL_SEPARATOR = ";";
     String PHRASE_SEPARATOR = ";";
+
+    // OntologyAgent message keys.
+    String ONT_OPERATION = "oOperation";
+    String ONT_BASE = "oBase";                  // i.e. http://www.wp.pl
+    String ONT_OBJECT = "oObject";
+    String ONT_RELATED_OBJECT = "oRelatedObject";
+    String ONT_PROPERTY = "oProperty";
+    String ONT_TYPE = "oType";
+    String ONT_VALUE = "oValue";
+    String ONT_VALUE_TYPE = "oValueType";
+
+    // OntologyAgent message values;
+    String ONT_NEW = "oNewOntology";
+    String ONT_ADD_CLASS = "oAddClass";
+    String ONT_ADD_SUBCLASS = "oAddSubclass";
+    String ONT_ADD_ASSERTION = "oAddAssertion";
+    String ONT_TYPE_OBJECT_ASSERTION = "oObjectProperty";
+    String ONT_TYPE_DATA_ASSERTION = "oDataProperty";
+    String ONT_TYPE_CLASS_ASSERTION = "oClassAssertion";
+    String ONT_TYPE_INTEGER = "oTypeInteger";
+    String ONT_TYPE_STRING = "oTypeString";
+
 
     String TEST_ONTOLOGY = "<?xml version=\"1.0\"?>\n"
             + "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns=\"http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#\" xml:base=\"http://protege.stanford.edu/plugins/owl/owl-library/koala.owl\">\n"

@@ -1,5 +1,6 @@
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+
 import statistics.Statistics;
 
 import java.io.BufferedReader;
@@ -32,13 +33,6 @@ public class PageDownloaderAgent extends AbstractAgent {
 
         @Override
         protected void processMessage(ACLMessage msg) {
-            OntologyManager o = new OntologyManager();
-
-            try {
-                o.shouldLoad();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
             String phrases = msg.getUserDefinedParameter(Constants.PHRASES);
 

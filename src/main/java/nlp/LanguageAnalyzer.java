@@ -3,6 +3,7 @@ package nlp;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import javafx.util.Pair;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.getopt.stempel.Stemmer;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -20,7 +21,6 @@ import java.util.*;
 public class LanguageAnalyzer {
 
     private static final Set<String> stopWords = Sets.newHashSet();
-    private static final Set<String> isPhrases = Sets.newHashSet("jest", "są", "to", "był", "była", "było", "byli", "były", "będzie", "będą", "zostanie", "zostaną");
 
     private final Map<String, MorphInterpretation> phraseInterpretations;
     private final Stemmer stemmer = new Stemmer();
@@ -28,10 +28,15 @@ public class LanguageAnalyzer {
 
     private final Set<ObjectProperty> objectProperties = new HashSet<>();
 
+    private final List<Rule> rules = new ArrayList<>();
+
     public LanguageAnalyzer(String[] phraseArray) {
         phraseInterpretations = new HashMap<>(phraseArray.length);
         for(String phrase: phraseArray) {
-            phraseInterpretations.put(phrase, LanguageUtils.findBasicNoun(phrase, morfeusz));
+            MorphInterpretation noun = LanguageUtils.findBasicNoun(phrase, morfeusz);
+            if(noun != null) {
+                phraseInterpretations.put(noun.getLemma(), noun);
+            }
         }
     }
 
@@ -69,13 +74,18 @@ public class LanguageAnalyzer {
             return;
         }
 
-        ResultsIterator results = morfeusz.analyseAsIterator(text);
+        List<MorphInterpretation> results = morfeusz.analyseAsList(text);
+        List<ObjectProperty> properties = new ArrayList<>();
 
-        while(results.hasNext()) {
-            MorphInterpretation interpretation = results.next();
-            System.out.println(MorfeuszUtils.getInterpretationString(interpretation, morfeusz));
+        for(int i=0; i<results.size(); ++i) {
+            System.out.println(MorfeuszUtils.getInterpretationString(results.get(i), morfeusz));
+            if(phraseInterpretations.containsKey(results.get(i).getLemma())) {
+                for(Rule rule: rules) {
+                    properties.addAll(rule.checkRule(results, i));
+                }
+            }
         }
-
+/*
         String[] words = text.toLowerCase().replaceAll("\\.\\?,!", "").split(" ");
         for(int i=0; i<words.length; ++i) {
             String word = words[i];
@@ -87,18 +97,18 @@ public class LanguageAnalyzer {
                     findIsStatement(words, i);
                 }
             }
-        }
+        }*/
     }
 
     public LanguageAnalysis getResult() {
         return new LanguageAnalysis(objectProperties);
     }
-
+/*
     private void findIsStatement(String[] words, int position) {
         if(position+2 < words.length && isPhrases.contains(words[position+1]) && !stopWords.contains(words[position+2])) {
             objectProperties.add(new ObjectProperty(words[position], words[position+2], "true"));
             Statistics.stat(Statistics.StatisticsEvent.IS_STATEMENTS_FOUND);
         }
     }
-
+*/
 }
