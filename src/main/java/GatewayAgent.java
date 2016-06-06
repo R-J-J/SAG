@@ -43,35 +43,37 @@ public class GatewayAgent extends AbstractAgent {
                 alreadyProcessedUrls.clear();
                 statistics.reset();
                 deregisterServices();
+
+                if (urls.length != 1) {
+                    System.err.println("Too many URLs in message!");
+                    return;
+                }
+
+                URL url = createAndValidateUrl(urls[0], fromCrawler);
+                domain = url.getHost();
+
+                String file = msg.getUserDefinedParameter(Constants.FILE);
+                if(file != null) {
+                    try {
+                        ACLMessage newOntologyMsg = AgentUtils.newMessage("xxx", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
+                        newOntologyMsg.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_NEW);
+                        newOntologyMsg.addUserDefinedParameter(Constants.ONT_BASE, domain);
+                        newOntologyMsg.addUserDefinedParameter(Constants.ONT_OBJECT, file);
+                        send(newOntologyMsg);
+                        registerOneService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
+                    } catch (AgentNotFoundException e) {
+                        System.out.println("No free Ontology agents services available!");
+                        e.printStackTrace();
+                        return;
+                    }
+                }
             }
 
-            boolean newOntologyRequestSent = false;
             for (String urlString : urls) {
                 URL url = createAndValidateUrl(urlString, fromCrawler);
 
                 if (url == null) {
                     continue;
-                }
-
-                if (!fromCrawler && !newOntologyRequestSent) {
-
-                    domain = url.getHost();
-                    String file = msg.getUserDefinedParameter(Constants.FILE);
-                    if(file != null) {
-                        try {
-                            ACLMessage newOntologyMsg = AgentUtils.newMessage("xxx", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
-                            newOntologyMsg.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_NEW);
-                            newOntologyMsg.addUserDefinedParameter(Constants.ONT_BASE, domain);
-                            newOntologyMsg.addUserDefinedParameter(Constants.ONT_OBJECT, file);
-                            send(newOntologyMsg);
-                            registerOneService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
-                            newOntologyRequestSent = true;
-                        } catch (AgentNotFoundException e) {
-                            System.out.println("No free Ontology agents services available!");
-                            e.printStackTrace();
-                            return;
-                        }
-                    }
                 }
 
                 AID receiverAid;
