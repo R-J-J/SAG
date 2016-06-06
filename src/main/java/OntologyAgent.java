@@ -1,3 +1,4 @@
+import jade.core.Location;
 import jade.lang.acl.ACLMessage;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.vocab.OWLFacet;
@@ -22,7 +23,16 @@ public class OntologyAgent extends AbstractAgent {
 
     OntologyManager ontologyManager;
     OntologySaverThread ontologySaverThread;
-    String domain = null;
+
+    @Override
+    public void doMove(Location destination) {
+        System.out.println("Operation of moving OntologyAgent not permitted.");
+    }
+
+    @Override
+    public void doClone(Location destination, String newName) {
+        System.out.println("Operation of cloning OntologyAgent not permitted.");
+    }
 
     @Override
     protected void setup() {

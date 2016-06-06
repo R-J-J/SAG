@@ -1,5 +1,6 @@
 import com.google.common.base.Strings;
 import jade.core.AID;
+import jade.core.Location;
 import jade.lang.acl.ACLMessage;
 import statistics.Statistics;
 
@@ -20,6 +21,11 @@ public class GatewayAgent extends AbstractAgent {
     @Override
     protected void addBehaviours() {
         addBehaviour(new UrlValidateBehaviour());
+    }
+
+    @Override
+    public void doClone(Location destination, String newName) {
+        System.out.println("Operation of cloning GatewayAgent not permitted.");
     }
 
     private class UrlValidateBehaviour extends AbstractMessageProcessingBehaviour {
