@@ -2,7 +2,6 @@ package agents;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
-import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
@@ -14,7 +13,6 @@ import java.util.Set;
 
 public class OntologyManager {
 
-    private String base;
     private OWLOntologyManager manager;
     private IRI ontologyIRI;
     private IRI documentIRI;
@@ -24,12 +22,9 @@ public class OntologyManager {
 
     OntologyManager() {
         manager = OWLManager.createOWLOntologyManager();
-
-
     }
 
     void createNewOntology(String base, String fileName) {
-        this.base = base;
 
         try {
             ontologyIRI = IRI.create(base);
@@ -46,10 +41,6 @@ public class OntologyManager {
                 prefix += "/";
 
             documentIRI = IRI.create(prefix + fileName);
-
-            // Set up a mapping, which maps the ontology to the document IRI
-//            SimpleIRIMapper mapper = new SimpleIRIMapper(ontologyIRI, documentIRI);
-//            manager.getIRIMappers().add(mapper);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -332,12 +323,5 @@ public class OntologyManager {
 
     private String processName(String name) {
         return name.replaceAll(" ", "_");
-    }
-
-    public void testKoala() throws Exception {
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        OWLOntology ontology = manager.loadOntologyFromOntologyDocument(new StringDocumentSource(Constants.TEST_ONTOLOGY));
-        IRI destination = IRI.create(new File("ontologies/ontology_test_koala.xml"));
-        manager.saveOntology(ontology, destination);
     }
 }
