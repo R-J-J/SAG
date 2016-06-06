@@ -30,6 +30,7 @@ public interface Constants {
 
     // OntologyAgent message values;
     String ONT_NEW = "oNewOntology";
+    String ONT_SAVE = "oSave";
     String ONT_ADD_CLASS = "oAddClass";
     String ONT_ADD_SUBCLASS = "oAddSubclass";
     String ONT_ADD_ASSERTION = "oAddAssertion";
