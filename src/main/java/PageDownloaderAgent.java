@@ -35,6 +35,7 @@ public class PageDownloaderAgent extends AbstractAgent {
         protected void processMessage(ACLMessage msg) {
 
             String phrases = msg.getUserDefinedParameter(Constants.PHRASES);
+            String domain = msg.getUserDefinedParameter(Constants.DOMAIN);
 
             System.out.println("Downloading url: " + msg.getContent());
             try {
@@ -50,6 +51,7 @@ public class PageDownloaderAgent extends AbstractAgent {
                 }
                 ACLMessage msgForCrawler = AgentUtils.newMessage(pageContent, getAID(), receiverAid);
                 msgForCrawler.addUserDefinedParameter(Constants.URL, msg.getContent());
+                msgForCrawler.addUserDefinedParameter(Constants.DOMAIN, domain);
                 if(phrases != null) {
                     msgForCrawler.addUserDefinedParameter(Constants.PHRASES, phrases);
                 }

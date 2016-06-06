@@ -22,12 +22,6 @@ public class GatewayAgent extends AbstractAgent {
         addBehaviour(new UrlValidateBehaviour());
     }
 
-    @Override
-    protected List<ServiceName> servicesToRegister()
-    {
-        return new ArrayList<>(Arrays.asList(Constants.GATEWAY_SERVICE));
-    }
-
     private class UrlValidateBehaviour extends AbstractMessageProcessingBehaviour {
 
         @Override
@@ -48,6 +42,7 @@ public class GatewayAgent extends AbstractAgent {
                 //nowy request
                 alreadyProcessedUrls.clear();
                 statistics.reset();
+                deregisterServices();
             }
 
             boolean newOntologyRequestSent = false;
@@ -63,6 +58,7 @@ public class GatewayAgent extends AbstractAgent {
 
                     domain = url.getHost();
 
+                    registerOneService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
                     String file = msg.getUserDefinedParameter(Constants.FILE);
                     if(file != null) {
                         try {
@@ -86,6 +82,7 @@ public class GatewayAgent extends AbstractAgent {
                 }
 
                 ACLMessage message = AgentUtils.newMessage(url.toExternalForm(), getAID(), receiverAid);
+                message.addUserDefinedParameter(Constants.DOMAIN, domain);
                 if(phrases != null) {
                     message.addUserDefinedParameter(Constants.PHRASES, phrases);
                 }

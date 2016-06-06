@@ -110,6 +110,23 @@ public abstract class AbstractAgent extends Agent {
         return result[index];
     }
 
+    protected void registerOneService(ServiceName serviceName)
+    {
+        DFAgentDescription dfad = new DFAgentDescription();
+        dfad.setName(getAID());
+
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(serviceName.type);
+        sd.setName(serviceName.name);
+        dfad.addServices(sd);
+
+        try {
+            DFService.register(this,dfad);
+        } catch (FIPAException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     private void registerServices()
     {
         DFAgentDescription dfad = new DFAgentDescription();
@@ -130,7 +147,7 @@ public abstract class AbstractAgent extends Agent {
         }
     }
 
-    private void deregisterServices()
+    protected void deregisterServices()
     {
         try {
             DFService.deregister(this);

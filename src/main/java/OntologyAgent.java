@@ -22,6 +22,7 @@ public class OntologyAgent extends AbstractAgent {
 
     OntologyManager ontologyManager;
     OntologySaverThread ontologySaverThread;
+    String domain = null;
 
     @Override
     protected void setup() {
@@ -48,7 +49,6 @@ public class OntologyAgent extends AbstractAgent {
 
         @Override
         protected void processMessage(ACLMessage msg) {
-
             String operation = msg.getUserDefinedParameter(Constants.ONT_OPERATION);
 
             if (operation.equals(Constants.ONT_NEW)) {
@@ -57,6 +57,9 @@ public class OntologyAgent extends AbstractAgent {
                 String file = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
                 ontologyManager.save();
                 ontologyManager.createNewOntology(base, file);
+
+                deregisterServices();
+                registerOneService(new ServiceName(Constants.ONTOLOGY_SERVICE_TYPE, base));
             }
             else if (operation.equals(Constants.ONT_SAVE)) {
 
