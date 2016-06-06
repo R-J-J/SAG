@@ -46,7 +46,7 @@ public class OntologyAgent extends AbstractAgent {
 
     @Override
     protected void addBehaviours() {
-        addBehaviour(new HttpGetBehaviour());
+        addBehaviour(new OntologyBehaviour());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class OntologyAgent extends AbstractAgent {
         return new ArrayList<>(Arrays.asList(Constants.ONTOLOGY_SERVICE));
     }
 
-    private class HttpGetBehaviour extends AbstractMessageProcessingBehaviour {
+    private class OntologyBehaviour extends AbstractMessageProcessingBehaviour {
 
         @Override
         protected void processMessage(ACLMessage msg) {

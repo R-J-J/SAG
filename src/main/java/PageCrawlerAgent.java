@@ -85,6 +85,7 @@ public class PageCrawlerAgent extends AbstractAgent {
                 for (ObjectProperty objectProperty : analyzer.getObjectProperties()) {
                     ACLMessage message = AgentUtils.newMessage("", getAID(), domainOntology);
                     message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_ASSERTION);
+                    message.addUserDefinedParameter(Constants.ONT_OBJECT, objectProperty.object);
                     message.addUserDefinedParameter(Constants.ONT_PROPERTY, objectProperty.propertyName);
                     if(objectProperty.propertyValue == null) {
                         message.addUserDefinedParameter(Constants.ONT_TYPE, Constants.ONT_TYPE_OBJECT_ASSERTION);
