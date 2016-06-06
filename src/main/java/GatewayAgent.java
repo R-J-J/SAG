@@ -69,6 +69,7 @@ public class GatewayAgent extends AbstractAgent {
                         } catch (AgentNotFoundException e) {
                             System.out.println("No free Ontology agents services available!");
                             e.printStackTrace();
+                            return;
                         }
                     }
                 }
