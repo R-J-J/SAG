@@ -54,18 +54,20 @@ public class GatewayAgent extends AbstractAgent {
 
                 String file = msg.getUserDefinedParameter(Constants.FILE);
                 if(file != null) {
+                    ACLMessage newOntologyMsg;
                     try {
-                        ACLMessage newOntologyMsg = AgentUtils.newMessage("xxx", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
-                        newOntologyMsg.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_NEW);
-                        newOntologyMsg.addUserDefinedParameter(Constants.ONT_BASE, domain);
-                        newOntologyMsg.addUserDefinedParameter(Constants.ONT_OBJECT, file);
-                        send(newOntologyMsg);
-                        registerOneService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
+                        newOntologyMsg = AgentUtils.newMessage("xxx", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
+
                     } catch (AgentNotFoundException e) {
                         System.out.println("No free Ontology agents services available!");
                         e.printStackTrace();
                         return;
                     }
+                    newOntologyMsg.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_NEW);
+                    newOntologyMsg.addUserDefinedParameter(Constants.ONT_BASE, domain);
+                    newOntologyMsg.addUserDefinedParameter(Constants.ONT_OBJECT, file);
+                    send(newOntologyMsg);
+                    registerOneService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
                 }
             }
 
@@ -86,6 +88,7 @@ public class GatewayAgent extends AbstractAgent {
 
                 ACLMessage message = AgentUtils.newMessage(url.toExternalForm(), getAID(), receiverAid);
                 message.addUserDefinedParameter(Constants.DOMAIN, domain);
+                System.out.println("DOMAIN: " + domain);
                 if(phrases != null) {
                     message.addUserDefinedParameter(Constants.PHRASES, phrases);
                 }
@@ -126,13 +129,15 @@ public class GatewayAgent extends AbstractAgent {
                 statistics.stat(Statistics.StatisticsEvent.NOT_IN_DOMAIN);
                 return null;
             }
-            if (alreadyProcessedUrls.contains(url)) {
+            if (fromCrawler && alreadyProcessedUrls.contains(url)) {
                 System.out.println("Url already processed: " + url);
                 statistics.stat(Statistics.StatisticsEvent.ALREADY_PROCESSED);
                 return null;
             }
             System.out.println("Url valid: " + url);
-            alreadyProcessedUrls.add(url);
+            if (fromCrawler) {
+                alreadyProcessedUrls.add(url);
+            }
             statistics.stat(Statistics.StatisticsEvent.VALIDATED);
             return url;
         }
