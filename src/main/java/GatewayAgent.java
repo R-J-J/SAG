@@ -44,20 +44,37 @@ public class GatewayAgent extends AbstractAgent {
                 // return;
             }
 
+            if (!fromCrawler) {
+                //nowy request
+                alreadyProcessedUrls.clear();
+                statistics.reset();
+            }
+
+            boolean newOntologyRequestSent = false;
             for (String urlString : urls) {
-                if (!fromCrawler) {
-                    //nowy request
-                    alreadyProcessedUrls.clear();
-                    statistics.reset();
-                }
                 URL url = createAndValidateUrl(urlString, fromCrawler);
 
                 if (url == null) {
                     continue;
                 }
 
-                if (!fromCrawler) {
+                if (!fromCrawler && !newOntologyRequestSent) {
+                    newOntologyRequestSent = true;
+
                     domain = url.getHost();
+
+                    String file = msg.getUserDefinedParameter(Constants.FILE);
+                    if(file != null) {
+                        try {
+                            ACLMessage newOntologyMsg = AgentUtils.newMessage("xxx", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
+                            newOntologyMsg.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_NEW);
+                            newOntologyMsg.addUserDefinedParameter(Constants.ONT_BASE, domain);
+                            newOntologyMsg.addUserDefinedParameter(Constants.ONT_OBJECT, file);
+                            send(newOntologyMsg);
+                        } catch (AgentNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 AID receiverAid;

@@ -14,6 +14,7 @@ public interface Constants {
     String FROM_CRAWLER = "fromCrawler";
     String URL = "url";
     String PHRASES = "phrases";
+    String FILE = "file";
 
     String URL_SEPARATOR = ";";
     String PHRASE_SEPARATOR = ";";
