@@ -28,7 +28,7 @@ public class OntologyAgent extends AbstractAgent {
 
         ontologyManager = new OntologyManager();
 
-        test();
+//        test();
     }
 
     @Override
@@ -55,6 +55,10 @@ public class OntologyAgent extends AbstractAgent {
                 String file = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
                 ontologyManager.save();
                 ontologyManager.createNewOntology(base, file);
+            }
+            else if (operation.equals(Constants.ONT_SAVE)) {
+
+                ontologyManager.save();
             }
             else if (operation.equals(Constants.ONT_ADD_CLASS)) {
 
