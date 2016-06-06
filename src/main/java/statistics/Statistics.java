@@ -19,6 +19,7 @@ public class Statistics {
         VALIDATED,
         DOWNLOAD_FAILED,
         DOWNLOADED,
+        CRAWL_FAILED,
         CRAWLED,
         ADDED_TO_ONTOLOGY
     }

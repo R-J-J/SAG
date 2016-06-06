@@ -2,7 +2,6 @@ package nlp;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import org.getopt.stempel.Stemmer;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import pl.sgjp.morfeusz.Morfeusz;
@@ -19,7 +18,6 @@ public class LanguageAnalyzer implements AnalysisBuilder {
     private static final Set<String> stopWords = Sets.newHashSet();
 
     private final Map<String, MorphInterpretation> phraseInterpretations;
-    private final Stemmer stemmer = new Stemmer();
     private final Morfeusz morfeusz = Morfeusz.createInstance();
 
     private final Set<ObjectProperty> objectProperties = new HashSet<>();
@@ -30,12 +28,17 @@ public class LanguageAnalyzer implements AnalysisBuilder {
     public LanguageAnalyzer(String[] phraseArray) {
         phraseInterpretations = new HashMap<>(phraseArray.length);
         for(String phrase: phraseArray) {
-            MorphInterpretation noun = LanguageUtils.findBasicNoun(phrase, morfeusz);
+            MorphInterpretation noun = LanguageUtils.findNoun(phrase, morfeusz);
             if(noun != null) {
+                System.out.println("Adding lemma "+noun.getLemma()+" for word "+noun.getOrth());
                 phraseInterpretations.put(noun.getLemma(), noun);
+            } else {
+                System.out.println(phrase+" is not a valid noun");
             }
         }
-        rules.add(new SubclassRule(this));
+
+        rules.add(new IsRule(this, morfeusz));
+        rules.add(new PropertyRule(this, morfeusz));
     }
 
     @Override

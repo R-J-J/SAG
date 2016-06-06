@@ -37,79 +37,84 @@ public class PageCrawlerAgent extends AbstractAgent {
 
         @Override
         protected void processMessage(ACLMessage msg) {
-            String url = msg.getUserDefinedParameter(Constants.URL);
-            String pageContent = msg.getContent();
-            System.out.println("Crawling page: " + url);
+            try {
+                String url = msg.getUserDefinedParameter(Constants.URL);
+                String pageContent = msg.getContent();
+                System.out.println("Crawling page: " + url);
 
-            Document document = Jsoup.parse(pageContent);
+                Document document = Jsoup.parse(pageContent);
 
-            String phrases = msg.getUserDefinedParameter(Constants.PHRASES);
-            if(Strings.isNullOrEmpty(phrases)) {
-                System.out.println("Empty phrases parameter");
-                return;
-            }
+                String phrases = msg.getUserDefinedParameter(Constants.PHRASES);
+                if (Strings.isNullOrEmpty(phrases)) {
+                    System.out.println("Empty phrases parameter");
+                    return;
+                }
 
-            String[] phraseArray = phrases.split(Constants.PHRASE_SEPARATOR);
+                String[] phraseArray = phrases.split(Constants.PHRASE_SEPARATOR);
 
-            LanguageAnalyzer analyzer = new LanguageAnalyzer(phraseArray);
+                LanguageAnalyzer analyzer = new LanguageAnalyzer(phraseArray);
 
             /*
             for(Element element: document.getElementsByTag("tbody")) {
                // analyzer.analyzeTable(element);
             }
 */
-            for(String tagName: new String[]{"p", "h1"}) {
-                for (Element element : document.getElementsByTag(tagName)) {
-                    analyzer.analyzeText(element.text());
-                    analyzer.analyzeText(element.val());
-                    for(Node node: element.childNodes()) {
-                        if (node instanceof TextNode) {
-                            TextNode textNode = (TextNode) node;
-                            analyzer.analyzeText(textNode.text());
+                for (String tagName : new String[]{"p", "h1"}) {
+                    for (Element element : document.getElementsByTag(tagName)) {
+                        analyzer.analyzeText(element.text());
+                        analyzer.analyzeText(element.val());
+                        for (Node node : element.childNodes()) {
+                            if (node instanceof TextNode) {
+                                TextNode textNode = (TextNode) node;
+                                analyzer.analyzeText(textNode.text());
+                            }
                         }
                     }
                 }
-            }
 
-            try {
-                for(ObjectProperty objectProperty: analyzer.getObjectProperties()) {
-                    //TODO
+                try {
+                    for (ObjectProperty objectProperty : analyzer.getObjectProperties()) {
+                        //TODO
+                    }
+                    for (ObjectSubclass objectSubclass : analyzer.getObjectSubclasses()) {
+                        ACLMessage message = AgentUtils.newMessage("", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
+                        message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_SUBCLASS);
+                        message.addUserDefinedParameter(Constants.ONT_OBJECT, objectSubclass.object);
+                        message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectSubclass.subclass);
+                        send(message);
+                    }
+                } catch (AgentNotFoundException e) {
+                    e.printStackTrace();
                 }
-                for(ObjectSubclass objectSubclass: analyzer.getObjectSubclasses()) {
-                    ACLMessage message = AgentUtils.newMessage("", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
-                    message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_SUBCLASS);
-                    message.addUserDefinedParameter(Constants.ONT_OBJECT, objectSubclass.object);
-                    message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectSubclass.subclass);
-                    send(message);
+
+                Elements hrefs = document.getElementsByAttribute("href");
+                System.out.println("HREFS: " + hrefs.size());
+                //TODO część stron ma artykuły wewnątrz <script> w jsonie
+                Set<String> urls = new HashSet<>();
+                for (Element href : hrefs) {
+                    //TODO crawler mógłby odrzucać linki do tej samej strony
+                    String nextUrlToProcess = href.attr("href");
+                    urls.add(nextUrlToProcess);
                 }
-            } catch (AgentNotFoundException e) {
+                String jointUrls = StringUtils.join(urls, Constants.URL_SEPARATOR);
+
+                AID receiverAid;
+                try {
+                    receiverAid = getAgentForService(Constants.GATEWAY_SERVICE);
+                } catch (AgentNotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                ACLMessage nextUrlToProcessMsg = AgentUtils.newMessage(jointUrls, getAID(), receiverAid);
+                nextUrlToProcessMsg.addUserDefinedParameter(Constants.FROM_CRAWLER, "true");
+                nextUrlToProcessMsg.addUserDefinedParameter(Constants.PHRASES, phrases);
+                send(nextUrlToProcessMsg);
+
+                statistics.stat(Statistics.StatisticsEvent.CRAWLED);
+            } catch (Exception e) {
                 e.printStackTrace();
+                statistics.stat(Statistics.StatisticsEvent.CRAWL_FAILED);
             }
-
-            Elements hrefs = document.getElementsByAttribute("href");
-            System.out.println("HREFS: " + hrefs.size());
-            //TODO część stron ma artykuły wewnątrz <script> w jsonie
-            Set<String> urls = new HashSet<>();
-            for (Element href : hrefs) {
-                //TODO crawler mógłby odrzucać linki do tej samej strony
-                String nextUrlToProcess = href.attr("href");
-                urls.add(nextUrlToProcess);
-            }
-            String jointUrls = StringUtils.join(urls, Constants.URL_SEPARATOR);
-
-            AID receiverAid;
-            try {
-                receiverAid = getAgentForService(Constants.GATEWAY_SERVICE);
-            } catch (AgentNotFoundException e) {
-                e.printStackTrace();
-                return;
-            }
-            ACLMessage nextUrlToProcessMsg = AgentUtils.newMessage(jointUrls, getAID(), receiverAid);
-            nextUrlToProcessMsg.addUserDefinedParameter(Constants.FROM_CRAWLER, "true");
-            nextUrlToProcessMsg.addUserDefinedParameter(Constants.PHRASES, phrases);
-            send(nextUrlToProcessMsg);
-
-            statistics.stat(Statistics.StatisticsEvent.CRAWLED);
         }
     }
 }

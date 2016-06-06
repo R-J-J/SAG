@@ -15,6 +15,10 @@ public class ObjectProperty {
         this.propertyValue = propertyValue;
     }
 
+    public ObjectProperty(String object, String propertyName) {
+        this(object, propertyName, null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

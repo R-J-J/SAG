@@ -17,18 +17,31 @@ public abstract class LanguageUtils {
 
     }
 
-    public static MorphInterpretation findBasicNoun(String word, Morfeusz morfeusz) {
-        return findByType(word, NOUN, morfeusz);
+    public static MorphInterpretation findNoun(String word, Morfeusz morfeusz) {
+        return findByType(word, morfeusz, NOUN);
     }
 
-    public static MorphInterpretation findByType(String word, String type, Morfeusz morfeusz) {
-        for(MorphInterpretation interpretation: morfeusz.analyseAsList(word)) {
+    public static MorphInterpretation findByType(String word, Morfeusz morfeusz, String... types) {
+        return findByType(morfeusz.analyseAsList(word), morfeusz, types);
+    }
+
+    public static MorphInterpretation findByType(List<MorphInterpretation> morphInterpretationList, Morfeusz morfeusz, String... types) {
+        for(MorphInterpretation interpretation: morphInterpretationList) {
             String foundType = morfeusz.getIdResolver().getTag(interpretation.getTagId());
-            if(type.equals(foundType.split(":")[0])) {
+            if(isType(foundType.split(":")[0], types)) {
                 return interpretation;
             }
         }
         return null;
+    }
+
+    private static boolean isType(String s, String[] types) {
+        for(String type: types) {
+            if(s.equals(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static MorphInterpretation findByLemma(String word, String lemma, Morfeusz morfeusz) {
@@ -38,6 +51,14 @@ public abstract class LanguageUtils {
             }
         }
         return null;
+    }
+
+    public static List<MorphInterpretation> getSingleWordInterpretations(List<MorphInterpretation> morphInterpretationList, int position) {
+        MorphInterpretation currentItem = morphInterpretationList.get(position);
+
+        int beginIndex = findPreviousWord(morphInterpretationList, position);
+        int endIndex = findNextWord(morphInterpretationList, position);
+        return morphInterpretationList.subList(beginIndex+1, endIndex == -1 ? morphInterpretationList.size() : endIndex + 1);
     }
 
     public static int findNextWord(List<MorphInterpretation> morphInterpretationList, int position) {
@@ -55,6 +76,28 @@ public abstract class LanguageUtils {
             currentOrth = currentItem.getOrth();
         }
         return i;
+    }
+
+    public static int findPreviousWord(List<MorphInterpretation> morphInterpretationList, int position) {
+        MorphInterpretation currentItem = morphInterpretationList.get(position);
+        String orth = currentItem.getOrth();
+        String currentOrth = orth;
+
+        int i = position;
+        while(orth.equals(currentOrth)) {
+            --i;
+            if(i < 0) {
+                return -1;
+            }
+            currentItem = morphInterpretationList.get(i);
+            currentOrth = currentItem.getOrth();
+        }
+        return i;
+    }
+
+    public static String getType(MorphInterpretation interpretation, Morfeusz morfeusz) {
+        String[] wordInfo = morfeusz.getIdResolver().getTag(interpretation.getTagId()).split(":");
+        return wordInfo.length > 0 ? wordInfo[0] : null;
     }
 
 }
