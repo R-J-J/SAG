@@ -28,8 +28,7 @@ public class PageCrawlerAgent extends AbstractAgent {
     }
 
     @Override
-    protected List<ServiceName> servicesToRegister()
-    {
+    protected List<ServiceName> servicesToRegister() {
         return new ArrayList<>(Arrays.asList(Constants.CRAWLER_SERVICE));
     }
 
@@ -39,10 +38,21 @@ public class PageCrawlerAgent extends AbstractAgent {
         protected void processMessage(ACLMessage msg) {
             try {
                 String url = msg.getUserDefinedParameter(Constants.URL);
+                String domain = msg.getUserDefinedParameter(Constants.DOMAIN);
                 String pageContent = msg.getContent();
                 System.out.println("Crawling page: " + url);
 
                 Document document = Jsoup.parse(pageContent);
+
+                // ONTOLOGY PART
+                AID domainOntology = null;
+                try {
+                    domainOntology = getAgentForService(new ServiceName(Constants.ONTOLOGY_SERVICE_TYPE, domain));
+                } catch (AgentNotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
 
                 String phrases = msg.getUserDefinedParameter(Constants.PHRASES);
                 if (Strings.isNullOrEmpty(phrases)) {
@@ -54,11 +64,11 @@ public class PageCrawlerAgent extends AbstractAgent {
 
                 LanguageAnalyzer analyzer = new LanguageAnalyzer(phraseArray);
 
-            /*
-            for(Element element: document.getElementsByTag("tbody")) {
-               // analyzer.analyzeTable(element);
-            }
-*/
+                /*
+                for(Element element: document.getElementsByTag("tbody")) {
+                   // analyzer.analyzeTable(element);
+                }
+    */
                 for (String tagName : new String[]{"p", "h1"}) {
                     for (Element element : document.getElementsByTag(tagName)) {
                         analyzer.analyzeText(element.text());
@@ -72,20 +82,28 @@ public class PageCrawlerAgent extends AbstractAgent {
                     }
                 }
 
-                try {
-                    for (ObjectProperty objectProperty : analyzer.getObjectProperties()) {
-                        //TODO
+                for (ObjectProperty objectProperty : analyzer.getObjectProperties()) {
+                    ACLMessage message = AgentUtils.newMessage("", getAID(), domainOntology);
+                    message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_ASSERTION);
+                    message.addUserDefinedParameter(Constants.ONT_PROPERTY, objectProperty.propertyName);
+                    if(objectProperty.propertyValue == null) {
+                        message.addUserDefinedParameter(Constants.ONT_TYPE, Constants.ONT_TYPE_OBJECT_ASSERTION);
+                        message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectProperty.propertyName);
+                    } else {
+                        message.addUserDefinedParameter(Constants.ONT_TYPE, Constants.ONT_TYPE_DATA_ASSERTION);
+                        message.addUserDefinedParameter(Constants.ONT_VALUE, objectProperty.propertyValue);
+                        message.addUserDefinedParameter(Constants.ONT_VALUE_TYPE, Constants.ONT_TYPE_STRING);
                     }
-                    for (ObjectSubclass objectSubclass : analyzer.getObjectSubclasses()) {
-                        ACLMessage message = AgentUtils.newMessage("", getAID(), getAgentForService(Constants.ONTOLOGY_SERVICE));
-                        message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_SUBCLASS);
-                        message.addUserDefinedParameter(Constants.ONT_OBJECT, objectSubclass.object);
-                        message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectSubclass.subclass);
-                        send(message);
-                    }
-                } catch (AgentNotFoundException e) {
-                    e.printStackTrace();
+                    send(message);
                 }
+                for (ObjectSubclass objectSubclass : analyzer.getObjectSubclasses()) {
+                    ACLMessage message = AgentUtils.newMessage("", getAID(), domainOntology);
+                    message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_SUBCLASS);
+                    message.addUserDefinedParameter(Constants.ONT_OBJECT, objectSubclass.object);
+                    message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectSubclass.subclass);
+                    send(message);
+                }
+
 
                 Elements hrefs = document.getElementsByAttribute("href");
                 System.out.println("HREFS: " + hrefs.size());
@@ -100,7 +118,7 @@ public class PageCrawlerAgent extends AbstractAgent {
 
                 AID receiverAid;
                 try {
-                    receiverAid = getAgentForService(Constants.GATEWAY_SERVICE);
+                    receiverAid = getAgentForService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
                 } catch (AgentNotFoundException e) {
                     e.printStackTrace();
                     return;

@@ -1,3 +1,4 @@
+import jade.core.Location;
 import jade.lang.acl.ACLMessage;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.vocab.OWLFacet;
@@ -24,6 +25,16 @@ public class OntologyAgent extends AbstractAgent {
     OntologySaverThread ontologySaverThread;
 
     @Override
+    public void doMove(Location destination) {
+        System.out.println("Operation of moving OntologyAgent not permitted.");
+    }
+
+    @Override
+    public void doClone(Location destination, String newName) {
+        System.out.println("Operation of cloning OntologyAgent not permitted.");
+    }
+
+    @Override
     protected void setup() {
         super.setup();
 
@@ -48,7 +59,6 @@ public class OntologyAgent extends AbstractAgent {
 
         @Override
         protected void processMessage(ACLMessage msg) {
-
             String operation = msg.getUserDefinedParameter(Constants.ONT_OPERATION);
 
             if (operation.equals(Constants.ONT_NEW)) {
@@ -57,6 +67,9 @@ public class OntologyAgent extends AbstractAgent {
                 String file = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
                 ontologyManager.save();
                 ontologyManager.createNewOntology(base, file);
+
+                deregisterServices();
+                registerOneService(new ServiceName(Constants.ONTOLOGY_SERVICE_TYPE, base));
             }
             else if (operation.equals(Constants.ONT_SAVE)) {
 

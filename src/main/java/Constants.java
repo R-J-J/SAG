@@ -6,15 +6,19 @@ public interface Constants {
     //identyfikatory serwisów
     AbstractAgent.ServiceName DOWNLOADER_SERVICE = new AbstractAgent.ServiceName("web", "download");
     AbstractAgent.ServiceName CRAWLER_SERVICE = new AbstractAgent.ServiceName("web", "crawler");
-    AbstractAgent.ServiceName GATEWAY_SERVICE = new AbstractAgent.ServiceName("web", "gateway");
+//    AbstractAgent.ServiceName GATEWAY_SERVICE = new AbstractAgent.ServiceName("web", "gateway");
     AbstractAgent.ServiceName ONTOLOGY_SERVICE = new AbstractAgent.ServiceName("web", "ontology");
     AbstractAgent.ServiceName STATISTICS_SERVICE = new AbstractAgent.ServiceName("general", "statistics");
+
+    String GATEWAY_SERVICE_TYPE = "gateway";
+    String ONTOLOGY_SERVICE_TYPE = "ontology";
 
     //parametry wiadomości
     String FROM_CRAWLER = "fromCrawler";
     String URL = "url";
     String PHRASES = "phrases";
     String FILE = "file";
+    String DOMAIN = "domain";
 
     String URL_SEPARATOR = ";";
     String PHRASE_SEPARATOR = ";";

@@ -46,9 +46,9 @@ public class PropertyRule extends Rule {
         String previousType = previousWord == null ? null : LanguageUtils.getType(previousWord, morfeusz);
         String nextType = nextWord == null ? null : LanguageUtils.getType(nextWord, morfeusz);
         if(previousType != null) {
-           //pies burek
+           //pies burek?
            if (LanguageUtils.NOUN.equals(previousType)) {
-                analysisBuilder.addObjectSubclass(new ObjectSubclass(object.getLemma(), previousWord.getLemma()));
+      //          analysisBuilder.addObjectSubclass(new ObjectSubclass(object.getLemma(), previousWord.getLemma()));
             }
             //czarny burek
             if (LanguageUtils.ADJECTIVE.equals(previousType)) {

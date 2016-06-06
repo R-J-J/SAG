@@ -96,7 +96,7 @@ public class LanguageAnalyzer implements AnalysisBuilder {
         List<MorphInterpretation> results = morfeusz.analyseAsList(text);
 
         for(int i=0; i<results.size(); ++i) {
-            System.out.println(MorfeuszUtils.getInterpretationString(results.get(i), morfeusz));
+           // System.out.println(MorfeuszUtils.getInterpretationString(results.get(i), morfeusz));
             if(phraseInterpretations.containsKey(results.get(i).getLemma())) {
                 for(Rule rule: rules) {
                     rule.checkRule(results, i);
