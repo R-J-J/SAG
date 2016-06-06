@@ -3,6 +3,7 @@ package nlp;
 import com.google.common.collect.Sets;
 import pl.sgjp.morfeusz.Morfeusz;
 import pl.sgjp.morfeusz.MorphInterpretation;
+import utils.Constants;
 
 import java.util.*;
 
@@ -55,10 +56,10 @@ public class IsRule extends Rule {
 
         String type = LanguageUtils.getType(subclass, morfeusz);
         if(LanguageUtils.NOUN.equals(type)) {
-            analysisBuilder.addObjectSubclass(new ObjectSubclass(object.getLemma(), subclass.getLemma()));
+            analysisBuilder.addSubclass(new Subclass(object.getLemma(), subclass.getLemma()));
         }
         if(LanguageUtils.ADJECTIVE.equals(type)) {
-            analysisBuilder.addObjectProperty(new ObjectProperty(object.getLemma(), subclass.getLemma()));
+            analysisBuilder.addDataProperty(new Property(object.getLemma(), Constants.HAS_ATTRIBUTE, subclass.getLemma()));
         }
     }
 

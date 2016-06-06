@@ -1,7 +1,11 @@
+package agents;
+
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import statistics.Statistics;
+import utils.AgentUtils;
+import utils.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;

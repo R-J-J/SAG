@@ -6,7 +6,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import pl.sgjp.morfeusz.Morfeusz;
 import pl.sgjp.morfeusz.MorphInterpretation;
-import pl.sgjp.morfeusz.app.MorfeuszUtils;
 
 import java.util.*;
 
@@ -20,8 +19,9 @@ public class LanguageAnalyzer implements AnalysisBuilder {
     private final Map<String, MorphInterpretation> phraseInterpretations;
     private final Morfeusz morfeusz = Morfeusz.createInstance();
 
-    private final Set<ObjectProperty> objectProperties = new HashSet<>();
-    private final Set<ObjectSubclass> objectSubclasses = new HashSet<>();
+    private final Set<Property> objectProperties = new HashSet<>();
+    private final Set<Property> dataProperties = new HashSet<>();
+    private final Set<Subclass> subclasses = new HashSet<>();
 
     private final List<Rule> rules = new ArrayList<>();
 
@@ -42,21 +42,30 @@ public class LanguageAnalyzer implements AnalysisBuilder {
     }
 
     @Override
-    public void addObjectProperty(ObjectProperty objectProperty) {
-        objectProperties.add(objectProperty);
+    public void addDataProperty(Property property) {
+        dataProperties.add(property);
     }
 
     @Override
-    public void addObjectSubclass(ObjectSubclass objectSubclass) {
-        objectSubclasses.add(objectSubclass);
+    public void addObjectProperty(Property property) {
+        objectProperties.add(property);
     }
 
-    public Set<ObjectProperty> getObjectProperties() {
+    @Override
+    public void addSubclass(Subclass subclass) {
+        subclasses.add(subclass);
+    }
+
+    public Set<Property> getDataProperties() {
+        return dataProperties;
+    }
+
+    public Set<Property> getObjectProperties() {
         return objectProperties;
     }
 
-    public Set<ObjectSubclass> getObjectSubclasses() {
-        return objectSubclasses;
+    public Set<Subclass> getSubclasses() {
+        return subclasses;
     }
 
     public void analyzeTable(Element table, String object) {
@@ -72,7 +81,7 @@ public class LanguageAnalyzer implements AnalysisBuilder {
             String property = tds.get(0).text();
             String value = tds.get(1).text();
             if (!Strings.isNullOrEmpty(property) && !Strings.isNullOrEmpty(value)) {
-                objectProperties.add(new ObjectProperty(object, property, value));
+                objectProperties.add(new Property(object, property, value));
             }
         }*/
     }
@@ -122,7 +131,7 @@ public class LanguageAnalyzer implements AnalysisBuilder {
 /*
     private void findIsStatement(String[] words, int position) {
         if(position+2 < words.length && isPhrases.contains(words[position+1]) && !stopWords.contains(words[position+2])) {
-            objectProperties.add(new ObjectProperty(words[position], words[position+2], "true"));
+            objectProperties.add(new Property(words[position], words[position+2], "true"));
             Statistics.stat(Statistics.StatisticsEvent.IS_STATEMENTS_FOUND);
         }
     }

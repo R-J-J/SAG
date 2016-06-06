@@ -1,8 +1,12 @@
+package agents;
+
 import com.google.common.base.Strings;
 import jade.core.AID;
 import jade.core.Location;
 import jade.lang.acl.ACLMessage;
 import statistics.Statistics;
+import utils.AgentUtils;
+import utils.Constants;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,7 +17,7 @@ import java.util.*;
  */
 public class GatewayAgent extends AbstractAgent {
 
-    private static final int LIMIT = 100;
+    private static final int LIMIT = 1;
 
     private Set<URL> alreadyProcessedUrls = new HashSet<>();
     private String domain;
@@ -25,7 +29,7 @@ public class GatewayAgent extends AbstractAgent {
 
     @Override
     public void doClone(Location destination, String newName) {
-        System.out.println("Operation of cloning GatewayAgent not permitted.");
+        System.out.println("Operation of cloning agents.GatewayAgent not permitted.");
     }
 
     private class UrlValidateBehaviour extends AbstractMessageProcessingBehaviour {
@@ -95,9 +99,7 @@ public class GatewayAgent extends AbstractAgent {
                 ACLMessage message = AgentUtils.newMessage(url.toExternalForm(), getAID(), receiverAid);
                 message.addUserDefinedParameter(Constants.DOMAIN, domain);
                 System.out.println("DOMAIN: " + domain);
-                if(phrases != null) {
-                    message.addUserDefinedParameter(Constants.PHRASES, phrases);
-                }
+                message.addUserDefinedParameter(Constants.PHRASES, phrases);
                 myAgent.send(message);
             }
         }

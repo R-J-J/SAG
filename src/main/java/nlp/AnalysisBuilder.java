@@ -5,7 +5,9 @@ package nlp;
  */
 public interface AnalysisBuilder {
 
-    void addObjectProperty(ObjectProperty objectProperty);
+    void addObjectProperty(Property property);
 
-    void addObjectSubclass(ObjectSubclass objectSubclass);
+    void addDataProperty(Property property);
+
+    void addSubclass(Subclass subclass);
 }

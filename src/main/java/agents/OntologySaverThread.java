@@ -1,6 +1,4 @@
-import jade.core.AID;
-
-import java.util.Map;
+package agents;
 
 /**
  * Created by Arjan on 06.06.2016.

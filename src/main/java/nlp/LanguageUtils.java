@@ -3,6 +3,7 @@ package nlp;
 import pl.sgjp.morfeusz.Morfeusz;
 import pl.sgjp.morfeusz.MorphInterpretation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,6 +55,9 @@ public abstract class LanguageUtils {
     }
 
     public static List<MorphInterpretation> getSingleWordInterpretations(List<MorphInterpretation> morphInterpretationList, int position) {
+        if(position == -1) {
+            return new ArrayList<>(0);
+        }
         MorphInterpretation currentItem = morphInterpretationList.get(position);
 
         int beginIndex = findPreviousWord(morphInterpretationList, position);
@@ -100,4 +104,8 @@ public abstract class LanguageUtils {
         return wordInfo.length > 0 ? wordInfo[0] : null;
     }
 
+    public static String getDeclination(MorphInterpretation interpretation, Morfeusz morfeusz) {
+        String[] wordInfo = morfeusz.getIdResolver().getTag(interpretation.getTagId()).split(":");
+        return wordInfo.length >= 3 ? wordInfo[2] : null;
+    }
 }

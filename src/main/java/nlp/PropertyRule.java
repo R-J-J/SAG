@@ -1,11 +1,10 @@
 package nlp;
 
-import com.google.common.collect.Sets;
 import pl.sgjp.morfeusz.Morfeusz;
 import pl.sgjp.morfeusz.MorphInterpretation;
+import utils.Constants;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Arjan on 05.06.2016.
@@ -28,43 +27,42 @@ public class PropertyRule extends Rule {
         MorphInterpretation object = results.get(position);
 
         int nextWordIndex = LanguageUtils.findNextWord(results, position);
-        if(nextWordIndex == -1) {
-            return;
-        }
 
         List<MorphInterpretation> nextWordInterpretations = LanguageUtils.getSingleWordInterpretations(results, nextWordIndex);
         MorphInterpretation nextWord = LanguageUtils.findByType(nextWordInterpretations, morfeusz, LanguageUtils.NOUN, LanguageUtils.ADJECTIVE);
 
         int previousWordIndex = LanguageUtils.findPreviousWord(results, position);
-        if(previousWordIndex == -1) {
-            return;
-        }
 
-        List<MorphInterpretation> previousWordInterpretations = LanguageUtils.getSingleWordInterpretations(results, nextWordIndex);
+        List<MorphInterpretation> previousWordInterpretations = LanguageUtils.getSingleWordInterpretations(results, previousWordIndex);
         MorphInterpretation previousWord = LanguageUtils.findByType(previousWordInterpretations, morfeusz, LanguageUtils.NOUN, LanguageUtils.ADJECTIVE);
 
         String previousType = previousWord == null ? null : LanguageUtils.getType(previousWord, morfeusz);
         String nextType = nextWord == null ? null : LanguageUtils.getType(nextWord, morfeusz);
         if(previousType != null) {
-           //pies burek?
-           if (LanguageUtils.NOUN.equals(previousType)) {
-      //          analysisBuilder.addObjectSubclass(new ObjectSubclass(object.getLemma(), previousWord.getLemma()));
+           //pies burek, psa burka
+           if (LanguageUtils.NOUN.equals(previousType) && isSameDeclination(previousWord, object, morfeusz)) {
+                analysisBuilder.addSubclass(new Subclass(previousWord.getLemma(), object.getLemma()));
             }
             //czarny burek
             if (LanguageUtils.ADJECTIVE.equals(previousType)) {
-                analysisBuilder.addObjectProperty(new ObjectProperty(object.getLemma(), previousWord.getLemma()));
+                analysisBuilder.addDataProperty(new Property(object.getLemma(), Constants.HAS_ATTRIBUTE, previousWord.getLemma()));
             }
         }
         if(nextType != null) {
-            //burek pies? prezes partii?
-            if (LanguageUtils.NOUN.equals(nextType)) {
-                analysisBuilder.addObjectProperty(new ObjectProperty(nextWord.getLemma(), object.getLemma()));
+            //burek pies?
+            if (LanguageUtils.NOUN.equals(nextType) && isSameDeclination(nextWord, object, morfeusz)) {
+                analysisBuilder.addObjectProperty(new Property(object.getLemma(), Constants.IS_ASSOCIATED_WITH, nextWord.getLemma()));
             }
-            //burek czarny? kundel bury? coś bez sensu...
+            //pole siłowe, partia polityczna
             if (LanguageUtils.ADJECTIVE.equals(nextType)) {
-                analysisBuilder.addObjectProperty(new ObjectProperty(object.getLemma(), nextWord.getLemma()));
+                analysisBuilder.addSubclass(new Subclass(object.getLemma(), object.getOrth()+" "+nextWord.getOrth()));
             }
         }
+    }
+
+    private boolean isSameDeclination(MorphInterpretation word1, MorphInterpretation word2, Morfeusz morfeusz) {
+        String declination1 = LanguageUtils.getDeclination(word1, morfeusz);
+        return declination1 != null && declination1.equals(LanguageUtils.getDeclination(word2, morfeusz));
     }
 
 }

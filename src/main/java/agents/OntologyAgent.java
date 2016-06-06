@@ -1,8 +1,11 @@
+package agents;
+
 import jade.core.Location;
 import jade.lang.acl.ACLMessage;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import statistics.Statistics;
+import utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,12 +29,12 @@ public class OntologyAgent extends AbstractAgent {
 
     @Override
     public void doMove(Location destination) {
-        System.out.println("Operation of moving OntologyAgent not permitted.");
+        System.out.println("Operation of moving agents.OntologyAgent not permitted.");
     }
 
     @Override
     public void doClone(Location destination, String newName) {
-        System.out.println("Operation of cloning OntologyAgent not permitted.");
+        System.out.println("Operation of cloning agents.OntologyAgent not permitted.");
     }
 
     @Override
@@ -75,46 +78,43 @@ public class OntologyAgent extends AbstractAgent {
 
                 ontologyManager.save();
             }
-            else if (operation.equals(Constants.ONT_ADD_CLASS)) {
+            else {
+                statistics.stat(Statistics.StatisticsEvent.ADDED_TO_ONTOLOGY);
+                if (operation.equals(Constants.ONT_ADD_CLASS)) {
 
-                String newClass = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
-                ontologyManager.addClass(newClass);
-            }
-            else if (operation.equals(Constants.ONT_ADD_SUBCLASS)) {
-                String parentClass = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
-                String derivedClass = msg.getUserDefinedParameter(Constants.ONT_RELATED_OBJECT);
+                    String newClass = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
+                    ontologyManager.addClass(newClass);
+                } else if (operation.equals(Constants.ONT_ADD_SUBCLASS)) {
+                    String parentClass = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
+                    String derivedClass = msg.getUserDefinedParameter(Constants.ONT_RELATED_OBJECT);
 
-                ontologyManager.addSubclass(derivedClass, parentClass);
-            }
-            else if (operation.equals(Constants.ONT_ADD_ASSERTION)) {
-                String type = msg.getUserDefinedParameter(Constants.ONT_TYPE);
-                String object = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
+                    ontologyManager.addSubclass(derivedClass, parentClass);
+                } else if (operation.equals(Constants.ONT_ADD_ASSERTION)) {
+                    String type = msg.getUserDefinedParameter(Constants.ONT_TYPE);
+                    String object = msg.getUserDefinedParameter(Constants.ONT_OBJECT);
 
-                if (type.equals(Constants.ONT_TYPE_CLASS_ASSERTION)) {
-                    String target = msg.getUserDefinedParameter(Constants.ONT_RELATED_OBJECT);
+                    if (type.equals(Constants.ONT_TYPE_CLASS_ASSERTION)) {
+                        String target = msg.getUserDefinedParameter(Constants.ONT_RELATED_OBJECT);
 
-                    ontologyManager.addClassAssertion(object, target);
-                }
-                else if (type.equals(Constants.ONT_TYPE_OBJECT_ASSERTION)) {
-                    String property = msg.getUserDefinedParameter(Constants.ONT_PROPERTY);
-                    String target = msg.getUserDefinedParameter(Constants.ONT_RELATED_OBJECT);
+                        ontologyManager.addClassAssertion(object, target);
+                    } else if (type.equals(Constants.ONT_TYPE_OBJECT_ASSERTION)) {
+                        String property = msg.getUserDefinedParameter(Constants.ONT_PROPERTY);
+                        String target = msg.getUserDefinedParameter(Constants.ONT_RELATED_OBJECT);
 
-                    ontologyManager.addObjectPropertyAssertion(object, property, target);
-                }
-                else if (type.equals(Constants.ONT_TYPE_DATA_ASSERTION)) {
-                    String property = msg.getUserDefinedParameter(Constants.ONT_PROPERTY);
-                    String value = msg.getUserDefinedParameter(Constants.ONT_VALUE);
-                    String valueType = msg.getUserDefinedParameter(Constants.ONT_VALUE_TYPE);
+                        ontologyManager.addObjectPropertyAssertion(object, property, target);
+                    } else if (type.equals(Constants.ONT_TYPE_DATA_ASSERTION)) {
+                        String property = msg.getUserDefinedParameter(Constants.ONT_PROPERTY);
+                        String value = msg.getUserDefinedParameter(Constants.ONT_VALUE);
+                        String valueType = msg.getUserDefinedParameter(Constants.ONT_VALUE_TYPE);
 
-                    if (valueType.equals(Constants.ONT_TYPE_STRING)) {
-                        ontologyManager.addDataPropertyAssertion(object, property, value);
-                    }
-                    else if (valueType.equals(Constants.ONT_TYPE_INTEGER)) {
-                        ontologyManager.addDataPropertyAssertion(object, property, Integer.parseInt(value));
+                        if (valueType.equals(Constants.ONT_TYPE_STRING)) {
+                            ontologyManager.addDataPropertyAssertion(object, property, value);
+                        } else if (valueType.equals(Constants.ONT_TYPE_INTEGER)) {
+                            ontologyManager.addDataPropertyAssertion(object, property, Integer.parseInt(value));
+                        }
                     }
                 }
             }
-            statistics.stat(Statistics.StatisticsEvent.ADDED_TO_ONTOLOGY);
 
             if(!ontologySaverThread.isAlive()) {
                 ontologySaverThread.start();

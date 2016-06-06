@@ -1,22 +1,20 @@
 package nlp;
 
+import utils.Constants;
+
 /**
  * Created by Arjan on 05.06.2016.
  */
-public class ObjectProperty {
+public class Property {
 
     public final String object;
     public final String propertyName;
     public final String propertyValue;
 
-    public ObjectProperty(String object, String propertyName, String propertyValue) {
+    public Property(String object, String propertyName, String propertyValue) {
         this.object = object;
         this.propertyName = propertyName;
         this.propertyValue = propertyValue;
-    }
-
-    public ObjectProperty(String object, String propertyName) {
-        this(object, propertyName, null);
     }
 
     @Override
@@ -24,7 +22,7 @@ public class ObjectProperty {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ObjectProperty that = (ObjectProperty) o;
+        Property that = (Property) o;
 
         if (object != null ? !object.equals(that.object) : that.object != null) return false;
         if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) return false;
@@ -42,7 +40,7 @@ public class ObjectProperty {
 
     @Override
     public String toString() {
-        return "ObjectProperty{" +
+        return "Property{" +
                 "object='" + object + '\'' +
                 ", propertyName='" + propertyName + '\'' +
                 ", propertyValue='" + propertyValue + '\'' +

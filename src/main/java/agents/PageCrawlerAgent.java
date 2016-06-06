@@ -1,10 +1,12 @@
+package agents;
+
 import com.google.common.base.Strings;
 import com.sun.deploy.util.StringUtils;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import nlp.LanguageAnalyzer;
-import nlp.ObjectProperty;
-import nlp.ObjectSubclass;
+import nlp.Property;
+import nlp.Subclass;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +14,8 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import statistics.Statistics;
+import utils.AgentUtils;
+import utils.Constants;
 
 import java.util.*;
 
@@ -69,7 +73,7 @@ public class PageCrawlerAgent extends AbstractAgent {
                    // analyzer.analyzeTable(element);
                 }
     */
-                for (String tagName : new String[]{"p", "h1"}) {
+                for (String tagName : new String[]{"p", "a", "h1", "h2", "h3", "h4", "h5", "h6"}) {
                     for (Element element : document.getElementsByTag(tagName)) {
                         analyzer.analyzeText(element.text());
                         analyzer.analyzeText(element.val());
@@ -82,36 +86,37 @@ public class PageCrawlerAgent extends AbstractAgent {
                     }
                 }
 
-                for (ObjectProperty objectProperty : analyzer.getObjectProperties()) {
+                for (Property objectProperty : analyzer.getObjectProperties()) {
                     ACLMessage message = AgentUtils.newMessage("", getAID(), domainOntology);
                     message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_ASSERTION);
                     message.addUserDefinedParameter(Constants.ONT_OBJECT, objectProperty.object);
                     message.addUserDefinedParameter(Constants.ONT_PROPERTY, objectProperty.propertyName);
-                    if(objectProperty.propertyValue == null) {
-                        message.addUserDefinedParameter(Constants.ONT_TYPE, Constants.ONT_TYPE_OBJECT_ASSERTION);
-                        message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectProperty.propertyName);
-                    } else {
-                        message.addUserDefinedParameter(Constants.ONT_TYPE, Constants.ONT_TYPE_DATA_ASSERTION);
-                        message.addUserDefinedParameter(Constants.ONT_VALUE, objectProperty.propertyValue);
-                        message.addUserDefinedParameter(Constants.ONT_VALUE_TYPE, Constants.ONT_TYPE_STRING);
-                    }
+                    message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectProperty.propertyValue);
+                    message.addUserDefinedParameter(Constants.ONT_TYPE, Constants.ONT_TYPE_OBJECT_ASSERTION);
                     send(message);
                 }
-                for (ObjectSubclass objectSubclass : analyzer.getObjectSubclasses()) {
+                for (Property dataProperty : analyzer.getDataProperties()) {
+                    ACLMessage message = AgentUtils.newMessage("", getAID(), domainOntology);
+                    message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_ASSERTION);
+                    message.addUserDefinedParameter(Constants.ONT_OBJECT, dataProperty.object);
+                    message.addUserDefinedParameter(Constants.ONT_PROPERTY, dataProperty.propertyName);
+                    message.addUserDefinedParameter(Constants.ONT_TYPE, Constants.ONT_TYPE_OBJECT_ASSERTION);
+                    message.addUserDefinedParameter(Constants.ONT_VALUE, dataProperty.propertyValue);
+                    message.addUserDefinedParameter(Constants.ONT_VALUE_TYPE, Constants.ONT_TYPE_STRING);
+                    send(message);
+                }
+                for (Subclass subclass : analyzer.getSubclasses()) {
                     ACLMessage message = AgentUtils.newMessage("", getAID(), domainOntology);
                     message.addUserDefinedParameter(Constants.ONT_OPERATION, Constants.ONT_ADD_SUBCLASS);
-                    message.addUserDefinedParameter(Constants.ONT_OBJECT, objectSubclass.object);
-                    message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, objectSubclass.subclass);
+                    message.addUserDefinedParameter(Constants.ONT_OBJECT, subclass.object);
+                    message.addUserDefinedParameter(Constants.ONT_RELATED_OBJECT, subclass.subclass);
                     send(message);
                 }
-
 
                 Elements hrefs = document.getElementsByAttribute("href");
                 System.out.println("HREFS: " + hrefs.size());
-                //TODO część stron ma artykuły wewnątrz <script> w jsonie
                 Set<String> urls = new HashSet<>();
                 for (Element href : hrefs) {
-                    //TODO crawler mógłby odrzucać linki do tej samej strony
                     String nextUrlToProcess = href.attr("href");
                     urls.add(nextUrlToProcess);
                 }

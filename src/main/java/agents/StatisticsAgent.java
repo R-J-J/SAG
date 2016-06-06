@@ -1,7 +1,10 @@
+package agents;
+
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import statistics.Statistics;
+import utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +52,7 @@ public class StatisticsAgent extends AbstractAgent {
                     try {
                         Statistics.stat((Statistics.StatisticsEvent) msg.getContentObject());
                     } catch (UnreadableException e) {
-                        System.err.println("[StatisticsAgent] Unreadable EVENT arrived.");
+                        System.err.println("[agents.StatisticsAgent] Unreadable EVENT arrived.");
                         e.printStackTrace();
                     }
                     break;
@@ -57,12 +60,12 @@ public class StatisticsAgent extends AbstractAgent {
                     try {
                         Statistics.updateQueue(sender, (Integer) msg.getContentObject());
                     } catch (UnreadableException e) {
-                        System.err.println("[StatisticsAgent] Unreadable QUEUE arrived.");
+                        System.err.println("[agents.StatisticsAgent] Unreadable QUEUE arrived.");
                         e.printStackTrace();
                     }
                     break;
                 default:
-                    System.err.println("[StatisticsAgent] Unknown message type: " + type + "; content: " + msg.getContent());
+                    System.err.println("[agents.StatisticsAgent] Unknown message type: " + type + "; content: " + msg.getContent());
             }
 
         }
