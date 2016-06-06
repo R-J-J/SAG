@@ -54,11 +54,8 @@ public class GatewayAgent extends AbstractAgent {
                 }
 
                 if (!fromCrawler && !newOntologyRequestSent) {
-                    newOntologyRequestSent = true;
 
                     domain = url.getHost();
-
-                    registerOneService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
                     String file = msg.getUserDefinedParameter(Constants.FILE);
                     if(file != null) {
                         try {
@@ -67,7 +64,10 @@ public class GatewayAgent extends AbstractAgent {
                             newOntologyMsg.addUserDefinedParameter(Constants.ONT_BASE, domain);
                             newOntologyMsg.addUserDefinedParameter(Constants.ONT_OBJECT, file);
                             send(newOntologyMsg);
+                            registerOneService(new ServiceName(Constants.GATEWAY_SERVICE_TYPE, domain));
+                            newOntologyRequestSent = true;
                         } catch (AgentNotFoundException e) {
+                            System.out.println("No free Ontology agents services available!");
                             e.printStackTrace();
                         }
                     }
