@@ -22,6 +22,7 @@ public class OntologyManager {
     OntologyManager() {
         manager = OWLManager.createOWLOntologyManager();
 
+
     }
 
     void createNewOntology(String base, String fileName) {

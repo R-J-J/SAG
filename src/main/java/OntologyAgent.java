@@ -21,12 +21,14 @@ import java.util.List;
 public class OntologyAgent extends AbstractAgent {
 
     OntologyManager ontologyManager;
+    OntologySaverThread ontologySaverThread;
 
     @Override
     protected void setup() {
         super.setup();
 
         ontologyManager = new OntologyManager();
+        ontologySaverThread = new OntologySaverThread(ontologyManager);
 
         test();
     }
@@ -96,6 +98,10 @@ public class OntologyAgent extends AbstractAgent {
                 }
             }
             statistics.stat(Statistics.StatisticsEvent.ADDED_TO_ONTOLOGY);
+
+            if(!ontologySaverThread.isAlive()) {
+                ontologySaverThread.start();
+            }
         }
     }
 
